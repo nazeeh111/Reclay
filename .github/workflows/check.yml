@@ -1,0 +1,25 @@
+name: Verify inferred codecs
+on: [push, pull_request]
+jobs:
+  verify:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {os: ubuntu-latest, python: '3.10'}
+          - {os: ubuntu-latest, python: '3.14'}
+          - {os: macos-latest, python: '3.14'}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python -m unittest discover -s tests -v
+      - run: python scripts/package.py
+      - name: Fresh offline wheel installation
+        run: |
+          python -m venv /tmp/reclay-installed
+          /tmp/reclay-installed/bin/python -m pip install --no-index --no-deps dist/reclay-0.1.0-py3-none-any.whl
+          /tmp/reclay-installed/bin/reclay --version
+          /tmp/reclay-installed/bin/reclay infer reclay/examples/river.wav reclay/examples/riverbend.wav reclay/examples/skyline-observation.wav --out /tmp/inferred.reclay

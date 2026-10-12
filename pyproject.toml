@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "reclay"
+version = "0.1.0"
+description = "Infer binary chunk rules from examples and compile standalone lossless editors"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [{name = "Nazeeh Abdul-Hadi"}]
+dependencies = []
+
+[project.scripts]
+reclay = "reclay.cli:main"
+
+[tool.setuptools.package-data]
+reclay = ["web/*", "examples/*"]
+
+[tool.setuptools.packages.find]
+include = ["reclay*"]
