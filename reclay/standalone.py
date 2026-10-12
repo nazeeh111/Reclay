@@ -1,4 +1,5 @@
 """Export a stdlib-only inferred codec; no input is executed as code."""
+
 import json
 from pathlib import Path
 from .engine import validate_model
@@ -6,12 +7,14 @@ from .engine import validate_model
 
 def export_standalone(model):
     validate_model(model)
-    core=Path(__file__).with_name("engine.py").read_text(encoding="utf-8")
-    encoded=json.dumps(model,sort_keys=True,separators=(",",":"),ensure_ascii=True)
-    return _LICENSE+core+"\n\nMODEL = json.loads("+repr(encoded)+")\n"+_MAIN
+    core = Path(__file__).with_name("engine.py").read_text(encoding="utf-8")
+    encoded = json.dumps(
+        model, sort_keys=True, separators=(",", ":"), ensure_ascii=True
+    )
+    return _LICENSE + core + "\n\nMODEL = json.loads(" + repr(encoded) + ")\n" + _MAIN
 
 
-_LICENSE='''# MIT License
+_LICENSE = """# MIT License
 #
 # Copyright (c) 2026 Nazeeh Abdul-Hadi
 #
@@ -33,10 +36,10 @@ _LICENSE='''# MIT License
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-'''
+"""
 
 
-_MAIN=r'''
+_MAIN = r"""
 def main(argv=None):
     import argparse
     import sys
@@ -76,4 +79,4 @@ def main(argv=None):
 
 if __name__=="__main__":
     raise SystemExit(main())
-'''
+"""
