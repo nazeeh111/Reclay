@@ -1,0 +1,315 @@
+{
+  "description": "Learn distant offsets and a byte count from marked title observations; resize a fresh TIFF while preserving exact pixels and unrelated metadata.",
+  "producer": {
+    "tool": "Pillow",
+    "version": "12.3.0",
+    "format": "raw TIFF",
+    "content": "Owned deterministic synthetic 32\u00d724 grayscale pixels and invented ASCII metadata",
+    "seed": 684,
+    "width": 32,
+    "height": 24,
+    "pixelSha256": "b6d384dc05b09586e4aa5308ce4beebb4a7aade32516091908ceab6ab82eecdb",
+    "trainingTitleSuffixLengths": [
+      10,
+      11,
+      12,
+      28,
+      50,
+      70000,
+      110,
+      35
+    ],
+    "trainingTitleOverrides": {
+      "6": "abcd"
+    }
+  },
+  "training": [
+    {
+      "name": "observation-0.tif",
+      "bytes": 982,
+      "sha256": "7b44e6b9f72de4b3da39599061695020047481830df312489af63407fd430c8e",
+      "start": 146,
+      "end": 167,
+      "content": "Owned synthetic grayscale; marked ASCII title including its NUL terminator"
+    },
+    {
+      "name": "observation-1.tif",
+      "bytes": 982,
+      "sha256": "f7f4d8e98e88473c7a1f351ecb4f39ef20c5e8d683e4510991d352f15b4da679",
+      "start": 146,
+      "end": 168,
+      "content": "Owned synthetic grayscale; marked ASCII title including its NUL terminator"
+    },
+    {
+      "name": "observation-2.tif",
+      "bytes": 984,
+      "sha256": "47fbe85b99752438e9ac1870e493da813a27caa8c35ae811a2a307861e2f27e8",
+      "start": 146,
+      "end": 169,
+      "content": "Owned synthetic grayscale; marked ASCII title including its NUL terminator"
+    },
+    {
+      "name": "observation-3.tif",
+      "bytes": 1000,
+      "sha256": "b9aab8bfaa9b19d1cf97ac5feef77e0d6a3fd8ed8c7fc70aca99195417a466ed",
+      "start": 146,
+      "end": 185,
+      "content": "Owned synthetic grayscale; marked ASCII title including its NUL terminator"
+    },
+    {
+      "name": "observation-4.tif",
+      "bytes": 1022,
+      "sha256": "77370251d7fe5071b6afc1275272479f2601a3d8a9ee72e4a9aaaca26b9cce78",
+      "start": 146,
+      "end": 207,
+      "content": "Owned synthetic grayscale; marked ASCII title including its NUL terminator"
+    },
+    {
+      "name": "observation-5.tif",
+      "bytes": 70972,
+      "sha256": "8d28c20b914bcc062384adde64c950b14d7dbd9a9c4f2018a14f3d5dbf9af6e8",
+      "start": 146,
+      "end": 70157,
+      "content": "Owned synthetic grayscale; marked ASCII title including its NUL terminator"
+    },
+    {
+      "name": "observation-6.tif",
+      "bytes": 966,
+      "sha256": "811726601baf404749a217e603c2b95979c4adc56577e7a0f9236778ba8649bb",
+      "start": 146,
+      "end": 151,
+      "content": "Owned synthetic grayscale; marked ASCII title including its NUL terminator"
+    },
+    {
+      "name": "observation-7.tif",
+      "bytes": 1006,
+      "sha256": "e0ed3ac873f2ff7f2dcade23b9c0f68f42af040b236c11ae20128dacd5f91623",
+      "start": 146,
+      "end": 192,
+      "content": "Owned synthetic grayscale; marked ASCII title including its NUL terminator"
+    }
+  ],
+  "working": {
+    "name": "working.tif",
+    "bytes": 1008,
+    "sha256": "b0b2d6dec233f34e5ae7fe6d6ac0a5256a9b604455d30d7cb2e6111fbb47dc00",
+    "start": 146,
+    "end": 194,
+    "title": "Afterlife fresh file metadata that was withheld"
+  },
+  "heldout": [
+    {
+      "payload": "replacement-0.bin",
+      "oracle": "oracle-0.tif",
+      "payloadBytes": 16,
+      "payloadSha256": "761c6ffbb991ec22cdf336a109035e7f2e44532a28c8c88af5c8090902cf37d8",
+      "oracleBytes": 976,
+      "oracleSha256": "8d22d5be636d9f6fd3b9cc0411eb7dd0996e25edd18ecbd24203a955e5e09a3d",
+      "byteExactIndependentProducer": true,
+      "receipt": {
+        "kind": "relocation",
+        "modelId": "dc5d2a639e714d012c7f72ad36c05f57e5b8b019cab554f53cf8bce7a531d232",
+        "originalBytes": 1008,
+        "editedBytes": 976,
+        "sha256": "8d22d5be636d9f6fd3b9cc0411eb7dd0996e25edd18ecbd24203a955e5e09a3d",
+        "originalSha256": "b0b2d6dec233f34e5ae7fe6d6ac0a5256a9b604455d30d7cb2e6111fbb47dc00",
+        "start": 146,
+        "end": 162,
+        "paddedEnd": 162,
+        "changes": [
+          {
+            "kind": "spanLength",
+            "site": 74,
+            "newSite": 74,
+            "before": 48,
+            "after": 16
+          },
+          {
+            "kind": "absoluteSuffixPointer",
+            "site": 90,
+            "newSite": 90,
+            "before": 240,
+            "after": 208
+          },
+          {
+            "kind": "absoluteSuffixPointer",
+            "site": 138,
+            "newSite": 138,
+            "before": 194,
+            "after": 162
+          }
+        ],
+        "unchangedEnvelopeVerified": true
+      }
+    },
+    {
+      "payload": "replacement-1.bin",
+      "oracle": "oracle-1.tif",
+      "payloadBytes": 427,
+      "payloadSha256": "3e785beadaf90ce558f4b288354625b67d192c66a332e540d84ee3ddfd3bd8cb",
+      "oracleBytes": 1388,
+      "oracleSha256": "68db0bdc0260b5e8b3cb61357b1698f002f54a37b84a94203e5a54e564230920",
+      "byteExactIndependentProducer": true,
+      "receipt": {
+        "kind": "relocation",
+        "modelId": "dc5d2a639e714d012c7f72ad36c05f57e5b8b019cab554f53cf8bce7a531d232",
+        "originalBytes": 1008,
+        "editedBytes": 1388,
+        "sha256": "68db0bdc0260b5e8b3cb61357b1698f002f54a37b84a94203e5a54e564230920",
+        "originalSha256": "b0b2d6dec233f34e5ae7fe6d6ac0a5256a9b604455d30d7cb2e6111fbb47dc00",
+        "start": 146,
+        "end": 573,
+        "paddedEnd": 574,
+        "changes": [
+          {
+            "kind": "spanLength",
+            "site": 74,
+            "newSite": 74,
+            "before": 48,
+            "after": 427
+          },
+          {
+            "kind": "absoluteSuffixPointer",
+            "site": 90,
+            "newSite": 90,
+            "before": 240,
+            "after": 620
+          },
+          {
+            "kind": "absoluteSuffixPointer",
+            "site": 138,
+            "newSite": 138,
+            "before": 194,
+            "after": 574
+          }
+        ],
+        "unchangedEnvelopeVerified": true
+      }
+    },
+    {
+      "payload": "replacement-2.bin",
+      "oracle": "oracle-2.tif",
+      "payloadBytes": 428,
+      "payloadSha256": "bcf5133fdef55e9e2d7f01b0e8e86a1b72257a9bf66cddaf254d7dcab4741f83",
+      "oracleBytes": 1388,
+      "oracleSha256": "df6c8471076b889d23c4dd55779bf9fa84e8fe3603eb2a4f3253ad9ae6477e20",
+      "byteExactIndependentProducer": true,
+      "receipt": {
+        "kind": "relocation",
+        "modelId": "dc5d2a639e714d012c7f72ad36c05f57e5b8b019cab554f53cf8bce7a531d232",
+        "originalBytes": 1008,
+        "editedBytes": 1388,
+        "sha256": "df6c8471076b889d23c4dd55779bf9fa84e8fe3603eb2a4f3253ad9ae6477e20",
+        "originalSha256": "b0b2d6dec233f34e5ae7fe6d6ac0a5256a9b604455d30d7cb2e6111fbb47dc00",
+        "start": 146,
+        "end": 574,
+        "paddedEnd": 574,
+        "changes": [
+          {
+            "kind": "spanLength",
+            "site": 74,
+            "newSite": 74,
+            "before": 48,
+            "after": 428
+          },
+          {
+            "kind": "absoluteSuffixPointer",
+            "site": 90,
+            "newSite": 90,
+            "before": 240,
+            "after": 620
+          },
+          {
+            "kind": "absoluteSuffixPointer",
+            "site": 138,
+            "newSite": 138,
+            "before": 194,
+            "after": 574
+          }
+        ],
+        "unchangedEnvelopeVerified": true
+      }
+    },
+    {
+      "payload": "replacement-3.bin",
+      "oracle": "oracle-3.tif",
+      "payloadBytes": 80011,
+      "payloadSha256": "dca8814706c73f80e67b2dc18fdf9a8850fe74434595ceead964dcb196595cef",
+      "oracleBytes": 80972,
+      "oracleSha256": "449ddf553caba4f136ed31ec08e3c24160a04b5aa2f3c897e66597c18fe14810",
+      "byteExactIndependentProducer": true,
+      "receipt": {
+        "kind": "relocation",
+        "modelId": "dc5d2a639e714d012c7f72ad36c05f57e5b8b019cab554f53cf8bce7a531d232",
+        "originalBytes": 1008,
+        "editedBytes": 80972,
+        "sha256": "449ddf553caba4f136ed31ec08e3c24160a04b5aa2f3c897e66597c18fe14810",
+        "originalSha256": "b0b2d6dec233f34e5ae7fe6d6ac0a5256a9b604455d30d7cb2e6111fbb47dc00",
+        "start": 146,
+        "end": 80157,
+        "paddedEnd": 80158,
+        "changes": [
+          {
+            "kind": "spanLength",
+            "site": 74,
+            "newSite": 74,
+            "before": 48,
+            "after": 80011
+          },
+          {
+            "kind": "absoluteSuffixPointer",
+            "site": 90,
+            "newSite": 90,
+            "before": 240,
+            "after": 80204
+          },
+          {
+            "kind": "absoluteSuffixPointer",
+            "site": 138,
+            "newSite": 138,
+            "before": 194,
+            "after": 80158
+          }
+        ],
+        "unchangedEnvelopeVerified": true
+      }
+    }
+  ],
+  "negativeControls": [
+    {
+      "name": "below-floor-1.tif",
+      "bytes": 960,
+      "sha256": "77b0fac7825628ba7c46cea98bb694b2b09440b992f043c8a9175ba7c4004958",
+      "payloadBytes": 1,
+      "rejection": "minimum-length",
+      "independentProducerReopenedExact": true
+    },
+    {
+      "name": "below-floor-2.tif",
+      "bytes": 960,
+      "sha256": "216cb459b1642aab36e94af89aa800c2f2ef4697ab73319b3cf53eb8ab3d19a8",
+      "payloadBytes": 2,
+      "rejection": "minimum-length",
+      "independentProducerReopenedExact": true
+    },
+    {
+      "name": "below-floor-4.tif",
+      "bytes": 960,
+      "sha256": "3dec257f0867e5228023a104f18e9e60130796fcb359074a5f4d718877326cb3",
+      "payloadBytes": 4,
+      "rejection": "minimum-length",
+      "independentProducerReopenedExact": true
+    }
+  ],
+  "validation": {
+    "trainingModelId": "dc5d2a639e714d012c7f72ad36c05f57e5b8b019cab554f53cf8bce7a531d232",
+    "trainingStatus": "unique",
+    "shortStatus": "ambiguous",
+    "shortModels": 48,
+    "independentFFmpeg": true,
+    "ffmpegVersion": "ffmpeg version 7.1 Copyright (c) 2000-2024 the FFmpeg developers",
+    "pillowReopenTitlePixelsPrivateMetadataExact": true,
+    "allHeldoutByteExact": true
+  },
+  "scope": "One marked span; observed zero alignment; fixed document topology and exact guarded pixels/private metadata. Not complete TIFF support or lost-application recovery."
+}

@@ -6,6 +6,12 @@ from urllib.parse import urlsplit, parse_qs
 from . import __version__
 from .engine import infer, parse, rebuild
 from .standalone import export_standalone
+from .relocation import (
+    infer_relocation,
+    inspect_relocation,
+    resize_relocation,
+    export_relocation,
+)
 
 MAX_FILE = 1_048_576
 MAX_BODY = 12 * MAX_FILE
@@ -22,9 +28,16 @@ def decode(value):
     return data
 
 
-def _infer_process(data, conn):
+def _infer_process(data, conn, spans=None):
     try:
-        conn.send({"ok": True, "result": infer(data)})
+        conn.send(
+            {
+                "ok": True,
+                "result": infer(data)
+                if spans is None
+                else infer_relocation(data, spans),
+            }
+        )
     except Exception as e:
         conn.send(
             {
@@ -37,7 +50,7 @@ def _infer_process(data, conn):
         conn.close()
 
 
-def bounded_infer(samples):
+def bounded_infer(samples, relocation=False):
     if not isinstance(samples, list) or not 2 <= len(samples) <= 8:
         raise ValueError("Provide between 2 and 8 observations")
     data = [decode(x["data"]) for x in samples]
@@ -50,7 +63,14 @@ def bounded_infer(samples):
     try:
         ctx = multiprocessing.get_context("spawn")
         parent, child = ctx.Pipe(duplex=False)
-        process = ctx.Process(target=_infer_process, args=(data, child))
+        process = ctx.Process(
+            target=_infer_process,
+            args=(
+                data,
+                child,
+                [[x["start"], x["end"]] for x in samples] if relocation else None,
+            ),
+        )
         process.start()
         child.close()
         if not parent.poll(20):
@@ -113,6 +133,32 @@ class Handler(BaseHTTPRequestHandler):
             url = urlsplit(self.path)
             if url.path == "/api/health":
                 return self.send(200, {"version": __version__})
+            if url.path == "/api/relocation-examples":
+                manifest = json.loads(
+                    (ROOT / "examples/relocation/manifest.json").read_text()
+                )
+
+                def observation(item):
+                    name = item["name"]
+                    if pathlib.Path(name).name != name:
+                        raise ValueError("Invalid example name")
+                    return {
+                        "name": name,
+                        "start": item["start"],
+                        "end": item["end"],
+                        "data": base64.b64encode(
+                            (ROOT / "examples/relocation" / name).read_bytes()
+                        ).decode(),
+                    }
+
+                return self.send(
+                    200,
+                    {
+                        "samples": [observation(x) for x in manifest["training"]],
+                        "working": observation(manifest["working"]),
+                        "description": manifest["description"],
+                    },
+                )
             if url.path == "/api/examples":
                 family = parse_qs(url.query).get("family", ["wav"])[0]
                 manifest = json.loads((ROOT / "examples/manifest.json").read_text())
@@ -137,6 +183,9 @@ class Handler(BaseHTTPRequestHandler):
             assets = {
                 "/": ("index.html", "text/html; charset=utf-8"),
                 "/app.js": ("app.js", "text/javascript; charset=utf-8"),
+                "/relocation.html": ("relocation.html", "text/html; charset=utf-8"),
+                "/relocation.js": ("relocation.js", "text/javascript; charset=utf-8"),
+                "/relocation.css": ("relocation.css", "text/css; charset=utf-8"),
                 "/style.css": ("style.css", "text/css; charset=utf-8"),
             }
             if url.path not in assets:
@@ -157,6 +206,35 @@ class Handler(BaseHTTPRequestHandler):
             obj = json.loads(self.rfile.read(length))
             if not isinstance(obj, dict):
                 raise ValueError("Request must be a JSON object")
+            if self.path == "/api/relocation/infer":
+                return self.send(200, bounded_infer(obj["samples"], relocation=True))
+            if self.path == "/api/relocation/export":
+                return self.send(
+                    200,
+                    {
+                        "filename": "relocation-editor.py",
+                        "source": export_relocation(obj["model"]),
+                    },
+                )
+            if self.path in ("/api/relocation/inspect", "/api/relocation/resize"):
+                data = decode(obj["data"])
+                if self.path.endswith("/inspect"):
+                    return self.send(
+                        200,
+                        inspect_relocation(
+                            data, obj["model"], obj["start"], obj["end"]
+                        ),
+                    )
+                output, changes = resize_relocation(
+                    data,
+                    obj["model"],
+                    obj["start"],
+                    obj["end"],
+                    decode(obj["replacement"]),
+                )
+                return self.send(
+                    200, {"data": base64.b64encode(output).decode(), "changes": changes}
+                )
             if self.path == "/api/infer":
                 return self.send(200, bounded_infer(obj["samples"]))
             if self.path == "/api/export":
