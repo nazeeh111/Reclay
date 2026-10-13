@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "reclay"
-version = "0.1.0"
-description = "Infer binary chunk rules from examples and compile standalone lossless editors"
+version = "0.2.0"
+description = "Learn binary blocks and marked-span relocation rules; compile standalone editors"
 requires-python = ">=3.10"
 license = "MIT"
 authors = [{name = "Nazeeh Abdul-Hadi"}]
@@ -15,7 +15,7 @@ dependencies = []
 reclay = "reclay.cli:main"
 
 [tool.setuptools.package-data]
-reclay = ["web/*", "examples/*"]
+reclay = ["web/*", "examples/*", "examples/relocation/*"]
 
 [tool.setuptools.packages.find]
 include = ["reclay*"]

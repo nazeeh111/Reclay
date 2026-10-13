@@ -1,0 +1,42 @@
+[
+  {
+    "file": "observation-0.tif",
+    "start": 146,
+    "end": 167
+  },
+  {
+    "file": "observation-1.tif",
+    "start": 146,
+    "end": 168
+  },
+  {
+    "file": "observation-2.tif",
+    "start": 146,
+    "end": 169
+  },
+  {
+    "file": "observation-3.tif",
+    "start": 146,
+    "end": 185
+  },
+  {
+    "file": "observation-4.tif",
+    "start": 146,
+    "end": 207
+  },
+  {
+    "file": "observation-5.tif",
+    "start": 146,
+    "end": 70157
+  },
+  {
+    "file": "observation-6.tif",
+    "start": 146,
+    "end": 151
+  },
+  {
+    "file": "observation-7.tif",
+    "start": 146,
+    "end": 192
+  }
+]

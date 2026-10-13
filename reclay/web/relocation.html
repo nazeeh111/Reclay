@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#eee9df" />
+    <title>Reclay · Keep the connections</title>
+    <link rel="stylesheet" href="/relocation.css" />
+    <script src="/relocation.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="/"
+        >reclay<span>files, understood by experiment</span></a
+      ><a href="/">Block editor ↗</a>
+    </header>
+    <main>
+      <section class="intro">
+        <div>
+          <p class="eyebrow">AN EDIT CAN MOVE EVERYTHING.</p>
+          <h1>Keep the<br /><em>connections.</em></h1>
+        </div>
+        <div class="intro-copy">
+          <p>
+            Change the size of a field without leaving its pointers behind. Mark
+            the same field in related files; learn the byte relationships;
+            inspect every rewrite.
+          </p>
+          <p class="quiet">
+            Local files. Separate downloads. No format database.
+          </p>
+          <button id="example" class="primary">
+            Try the TIFF experiment <span>↗</span>
+          </button>
+          <p id="description" class="small quiet">
+            Independently produced image files, including the large observation
+            that resolves a misleading short-field interpretation.
+          </p>
+        </div>
+      </section>
+      <div class="workspace">
+        <section class="panel evidence">
+          <div class="heading">
+            <h2><b>01</b> Observations</h2>
+            <span id="count" class="badge">0 files</span>
+          </div>
+          <p class="small">
+            Choose related files where only the marked field changes. Start is
+            inclusive, end is exclusive; include any required terminator,
+            exclude alignment padding. These spans are your supplied evidence.
+          </p>
+          <label class="upload"
+            >Add observations<input id="observations" type="file" multiple
+          /></label>
+          <p class="small quiet">2–8 files · 1 MiB each · 4 MiB total</p>
+          <div id="files"></div>
+          <button id="infer" class="primary wide" disabled>
+            Learn relationships →
+          </button>
+          <details>
+            <summary>What this can establish</summary>
+            <p class="small">
+              One marked span, byte-count fields, zero padding and absolute
+              pointers into an unchanged suffix. All other bytes must fit an
+              invariant envelope. Unchanged or unprobed dependencies can remain
+              undiscovered. Passing a fit does not recover a complete format.
+            </p>
+          </details>
+        </section>
+        <section class="panel interpretation">
+          <div class="heading">
+            <h2><b>02</b> Interpretation</h2>
+            <button id="save-model" class="plain" disabled>Save model</button>
+          </div>
+          <p id="model-status" class="small quiet">
+            Examples can support several explanations. A selection is an
+            explicit assumption.
+          </p>
+          <div id="models"></div>
+          <label class="upload subtle"
+            >Open saved model<input
+              id="model-upload"
+              type="file"
+              accept=".json"
+          /></label>
+          <div id="graph" class="graph">
+            <p>
+              Learned pointers will connect their stored addresses to the bytes
+              they refer to.
+            </p>
+          </div>
+          <details>
+            <summary>Evidence &amp; next experiment</summary>
+            <pre id="evidence">No observations yet.</pre>
+          </details>
+        </section>
+        <section class="panel material">
+          <div class="heading">
+            <h2><b>03</b> Reshape</h2>
+            <span id="working-name" class="badge">no file</span>
+          </div>
+          <label class="upload"
+            >Choose a working file<input id="working" type="file"
+          /></label>
+          <div class="spans">
+            <label
+              >Start<input
+                id="start"
+                type="number"
+                min="0"
+                step="1"
+                value="0" /></label
+            ><label
+              >End<input
+                id="end"
+                type="number"
+                min="0"
+                step="1"
+                value="0" /></label
+            ><button id="inspect" class="secondary" disabled>
+              Inspect span
+            </button>
+          </div>
+          <p id="guard" class="small quiet">
+            A fresh file must pass the selected model's guards, including its
+            unchanged content. Arbitrary new images may not fit.
+          </p>
+          <div class="draft">
+            <label for="encoding">Replacement bytes</label
+            ><select id="encoding">
+              <option value="hex">Hexadecimal</option>
+              <option value="text">UTF-8 text</option>
+            </select>
+          </div>
+          <textarea
+            id="payload"
+            spellcheck="false"
+            aria-label="Replacement payload"
+            placeholder="Inspect a marked span first"
+            disabled
+          ></textarea
+          ><label id="terminator-label" class="small"
+            ><input id="terminator" type="checkbox" disabled /> Append a zero
+            byte (your format assumption)</label
+          >
+          <p id="payload-size" class="small quiet"></p>
+          <button id="preview" class="primary wide" disabled>
+            Preview the rebuilt file →
+          </button>
+          <div id="result" hidden>
+            <div class="heading">
+              <h3>Actual byte rewrites</h3>
+              <span id="delta" class="badge"></span>
+            </div>
+            <div id="rewrites"></div>
+            <button id="download" class="primary wide" disabled>
+              Download separate file ↓
+            </button>
+            <p class="small quiet">
+              Structure fitting is not application acceptance. Check this file
+              with its original reader.
+            </p>
+          </div>
+          <button id="export" class="secondary wide" disabled>
+            Take the standalone editor ↓
+          </button>
+          <p class="small quiet">
+            Ordinary Python. No Reclay installation, server or inference
+            dependency needed. The exported editor repeats the file and pointer
+            guards.
+          </p>
+        </section>
+      </div>
+      <div id="status" role="status" aria-live="polite">
+        Load the experiment or add related observations.
+      </div>
+      <footer>
+        <span>Preserve the bytes you don't understand.</span
+        ><a
+          href="https://github.com/nazeeh111/Reclay"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Source, evidence &amp; limits ↗</a
+        >
+      </footer>
+    </main>
+  </body>
+</html>

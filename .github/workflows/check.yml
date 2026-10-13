@@ -20,6 +20,7 @@ jobs:
       - name: Fresh offline wheel installation
         run: |
           python -m venv /tmp/reclay-installed
-          /tmp/reclay-installed/bin/python -m pip install --no-index --no-deps dist/reclay-0.1.0-py3-none-any.whl
+          /tmp/reclay-installed/bin/python -m pip install --no-index --no-deps dist/reclay-0.2.0-py3-none-any.whl
           /tmp/reclay-installed/bin/reclay --version
           /tmp/reclay-installed/bin/reclay infer reclay/examples/river.wav reclay/examples/riverbend.wav reclay/examples/skyline-observation.wav --out /tmp/inferred.reclay
+          /tmp/reclay-installed/bin/python scripts/check_installed.py
