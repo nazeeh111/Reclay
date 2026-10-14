@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f4f1e9" />
+    <title>Reclay · Give bytes a working shape</title>
+    <link rel="stylesheet" href="./style.css" />
+    <script src="./browser-transport.js" defer></script><script src="./app.js" defer></script>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net 'wasm-unsafe-eval'; connect-src 'self' https://cdn.jsdelivr.net; style-src 'self'; img-src 'self' blob: data:; worker-src 'self'; object-src 'none'; base-uri 'self'"><link rel="stylesheet" href="./browser-runtime.css"></head>
+  <body data-runtime="browser">
+    <header class="masthead">
+      <a class="wordmark" href="./index.html" aria-label="Reclay home"
+        ><span class="brand-mark" aria-hidden="true"></span>reclay<span
+          class="brand-caption"
+          >a studio for unfamiliar files</span
+        ></a
+      >
+      <div class="runtime">
+        <span class="live-dot" aria-hidden="true"></span
+        ><span id="runtime">Browser workspace</span>
+      </div>
+    </header><section class="browser-runtime" aria-label="Browser engine"><span id="browser-runtime-status" role="status" aria-live="polite">Files stay in this browser.</span><button id="browser-cancel" type="button" disabled>Cancel computation</button><small>First computation downloads a pinned Python runtime from jsDelivr. No files are uploaded. <a href="https://pyodide.org/" target="_blank" rel="noopener noreferrer">Powered by Pyodide</a>.</small></section>
+    <main>
+      <section class="intro">
+        <div>
+          <p class="eyebrow">STRUCTURE, RECOVERED FROM EVIDENCE</p>
+          <h1>Unknown bytes.<br /><span>Working shape.</span></h1>
+        </div>
+        <div class="intro-copy">
+          <p>
+            Give a small collection of related files a second life. Infer their
+            block structure, inspect the competing explanations, then reshape a
+            fresh file with its lengths and checksums repaired.
+          </p>
+          <p class="quiet">
+            Your files stay in this browser. Originals stay intact.
+          </p>
+        </div>
+      </section>
+      <div class="workflow-labels" aria-label="Workspace stages">
+        <span><b>01</b> Gather evidence</span
+        ><span><b>02</b> Choose an interpretation</span
+        ><span><b>03</b> Reshape the material</span>
+      </div>
+      <div class="studio">
+        <aside class="corpus-pane panel">
+          <div class="panel-heading">
+            <h2>The collection</h2>
+            <span id="corpus-count" class="badge">0 files</span>
+          </div>
+          <p class="support">
+            Related files expose which bytes belong to structure and which
+            belong to content.
+          </p>
+          <label class="dropzone" id="dropzone"
+            ><input
+              id="corpus-files"
+              type="file"
+              multiple
+              aria-label="Add files to the evidence collection"
+            /><span class="upload-symbol" aria-hidden="true">↥</span
+            ><strong>Drop related files here</strong><span>or choose files</span
+            ><small>Up to 8 files · 1 MiB each · 4 MiB total</small></label
+          >
+          <div class="examples">
+            <p class="eyebrow small">TRY A REAL FILE FAMILY</p>
+            <div class="segmented" aria-label="Example families">
+              <button type="button" data-example="wav">WAV</button
+              ><button type="button" data-example="png">PNG</button
+              ><button type="button" data-example="aiff">AIFF</button>
+            </div>
+            <p id="example-description" class="quiet small-copy">
+              Includes independent files for exploring structural changes.
+            </p>
+          </div>
+          <ul
+            id="corpus-list"
+            class="file-list"
+            aria-label="Evidence files"
+          ></ul>
+          <button id="infer" class="primary wide" type="button" disabled>
+            Infer structure <span aria-hidden="true">→</span>
+          </button>
+          <div id="evidence-summary" class="evidence-summary" hidden></div>
+          <details id="experiment-details" class="details" hidden>
+            <summary>Experiments &amp; limits</summary>
+            <pre id="experiments"></pre>
+          </details>
+        </aside>
+        <section class="structure-pane panel" aria-label="Inferred structure">
+          <div class="panel-heading">
+            <h2>The interpretation</h2>
+            <button
+              id="download-schema"
+              class="text-button"
+              type="button"
+              disabled
+            >
+              Save schema
+            </button>
+          </div>
+          <div id="candidate-empty" class="empty-note">
+            <span class="specimen-icon" aria-hidden="true">▤</span>
+            <p>
+              A structure is a hypothesis.<br />Start with evidence, then choose
+              one.
+            </p>
+          </div>
+          <div
+            id="candidates"
+            class="candidates"
+            aria-label="Candidate interpretations"
+          ></div>
+          <p id="candidate-status" class="support" hidden></p>
+          <details id="model-details" class="details" hidden>
+            <summary>Inspect this grammar</summary>
+            <pre id="model-json"></pre>
+          </details>
+          <div class="target-controls" id="target-controls" hidden>
+            <label for="target-file">WORKING FILE</label>
+            <div class="target-row">
+              <select
+                id="target-file"
+                aria-label="Choose a working file"
+              ></select
+              ><label class="button secondary" for="target-upload"
+                >Open a fresh file</label
+              ><input
+                id="target-upload"
+                class="visually-hidden"
+                type="file"
+                aria-label="Open a fresh working file"
+              />
+            </div>
+            <p id="target-summary" class="quiet small-copy"></p>
+          </div>
+          <div id="document-area" hidden>
+            <div class="section-heading">
+              <h3>The block map</h3>
+              <span id="document-size" class="mono quiet"></span>
+            </div>
+            <div
+              id="byte-map"
+              class="byte-map"
+              aria-label="File block byte map"
+            ></div>
+            <div id="map-legend" class="map-legend"></div>
+            <div class="tree-labels">
+              <span>Block / location</span><span>Payload</span>
+            </div>
+            <div
+              id="chunk-tree"
+              class="chunk-tree"
+              role="group"
+              aria-label="File blocks"
+            ></div>
+            <div id="document-facts" class="document-facts"></div>
+          </div>
+          <div id="parse-empty" class="empty-note lower">
+            <p>
+              When the grammar fits, the file becomes a map.<br />Choose a block
+              to inspect its actual bytes.
+            </p>
+          </div>
+        </section>
+        <aside class="editor-pane panel" aria-label="Block editor">
+          <div class="panel-heading">
+            <h2>The material</h2>
+            <span id="editor-path" class="badge mono">no selection</span>
+          </div>
+          <div id="editor-empty" class="empty-note">
+            <span class="specimen-icon" aria-hidden="true">▱</span>
+            <p>
+              Choose a block in the map.<br />Edit its payload; let structure
+              follow.
+            </p>
+          </div>
+          <div id="editor-body" hidden>
+            <div class="selected-heading">
+              <h3 id="selected-tag"></h3>
+              <span id="selected-range" class="mono quiet"></span>
+            </div>
+            <div id="selected-facts" class="selected-facts"></div>
+            <div class="editor-toolbar">
+              <div class="segmented compact" aria-label="Payload encoding">
+                <button id="mode-hex" type="button" aria-pressed="true">
+                  Hex</button
+                ><button id="mode-text" type="button" aria-pressed="false">
+                  UTF-8
+                </button>
+              </div>
+              <span id="payload-size" class="mono quiet"></span>
+            </div>
+            <label for="payload-editor" class="eyebrow small" id="payload-label"
+              >PAYLOAD BYTES</label
+            ><textarea
+              id="payload-editor"
+              spellcheck="false"
+              autocapitalize="off"
+              autocomplete="off"
+              aria-describedby="editor-help"
+              placeholder="Select a block to inspect bytes"
+            ></textarea>
+            <p id="editor-help" class="quiet small-copy">
+              Hex pairs edit raw payload bytes. Container sizes and checksums
+              are computed from the new file.
+            </p>
+            <div class="edit-actions">
+              <button id="preview" class="primary" type="button">
+                Build edited file</button
+              ><button id="discard-edit" class="text-button" type="button">
+                Reset draft
+              </button>
+            </div>
+            <p id="draft-status" class="quiet small-copy"></p>
+          </div>
+          <div id="changes" class="changes" hidden>
+            <div class="section-heading">
+              <h3>What changed</h3>
+              <span class="badge">preview</span>
+            </div>
+            <div id="change-stats" class="change-stats"></div>
+            <div id="change-ranges" class="change-ranges"></div>
+            <details class="details">
+              <summary>Repair evidence</summary>
+              <pre id="change-json"></pre>
+            </details>
+            <button id="download-file" class="primary wide" type="button">
+              Download edited file <span aria-hidden="true">↓</span>
+            </button>
+            <p class="quiet small-copy">
+              A separate file, with the current preview's bytes.
+            </p>
+          </div>
+          <div class="codec-section">
+            <div>
+              <h3>Take the grammar with you.</h3>
+              <p class="quiet small-copy">
+                Export a self-contained Python codec to read and edit this
+                structure outside Reclay.
+              </p>
+            </div>
+            <button
+              id="download-codec"
+              class="secondary wide"
+              type="button"
+              disabled
+            >
+              Export standalone codec <span aria-hidden="true">↓</span>
+            </button>
+          </div>
+        </aside>
+      </div>
+      <div id="status" class="status" role="status" aria-live="polite">
+        Load a file family or add a collection to begin.
+      </div>
+      <footer>
+        <span>Inspect the evidence. Keep the ambiguity.</span
+        ><a href="./relocation.html">Learn internal pointers →</a><span>Local inference · raw bytes · portable grammar</span>
+      </footer>
+    </main>
+  </body>
+</html>

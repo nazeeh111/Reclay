@@ -1,0 +1,365 @@
+{
+  "producer": "ffmpeg version 7.1 Copyright (c) 2000-2024 the FFmpeg developers",
+  "training": {
+    "wav": [
+      {
+        "name": "river.wav",
+        "size": 40096,
+        "sha256": "b4a0cca69472d6e25e008c48332a04d2ddec3d00edb58bf9c2c0045b22290f26",
+        "title": "river",
+        "frames": 40003
+      },
+      {
+        "name": "riverbend.wav",
+        "size": 40204,
+        "sha256": "55c2b05300143cfc77d3aa40d82c5c2394c22e672503bbc9d24f44a60af0940d",
+        "title": "riverbend",
+        "frames": 40107
+      },
+      {
+        "name": "skyline-observation.wav",
+        "size": 70426,
+        "sha256": "6b7bd07f0cfb7df1264462586c1afa228b14706cb0926874f20edf108ca2485f",
+        "title": "skyline-observation",
+        "frames": 70319
+      }
+    ],
+    "aiff": [
+      {
+        "name": "river.aiff",
+        "size": 40072,
+        "sha256": "954705452b1794275cf34872310db0575ebc2313d6bbfb9446ae8a9f2744b1d5",
+        "title": "river",
+        "frames": 40003
+      },
+      {
+        "name": "riverbend.aiff",
+        "size": 40180,
+        "sha256": "9ebdde540bd2dd50a26c1fe0ad4d280a098c6674167eee0c23edd08d97372cf5",
+        "title": "riverbend",
+        "frames": 40107
+      },
+      {
+        "name": "skyline-observation.aiff",
+        "size": 70402,
+        "sha256": "33efec1b36b55d0d23b690cddf88c079c5f606fc7e62a59adf3320657478621f",
+        "title": "skyline-observation",
+        "frames": 70319
+      }
+    ],
+    "png": [
+      {
+        "name": "pattern-11x7.png",
+        "size": 152,
+        "sha256": "a24666f6760f6e436266e9b18f01b9a01593cf87264b7af865fd04c9912a5a67",
+        "width": 11,
+        "height": 7
+      },
+      {
+        "name": "pattern-13x9.png",
+        "size": 162,
+        "sha256": "36a875576cc5f50d9c3676e58ecf502ffd5a58cf5f5cbe6871f053711a60e800",
+        "width": 13,
+        "height": 9
+      },
+      {
+        "name": "pattern-19x11.png",
+        "size": 192,
+        "sha256": "2d50e5ad792c7c4c0787c8e2bfd50cfbbb4ea9f7781b6499b3a41b21b2e8265b",
+        "width": 19,
+        "height": 11
+      }
+    ]
+  },
+  "heldOut": {
+    "wav": [
+      {
+        "name": "an-independently-resized-title.wav",
+        "size": 40142,
+        "sha256": "7e6dbf4c20b47a8d11b9e0016130c03b649897a42912d45a6c31d048e95bcea7",
+        "title": "an independently resized title across odd alignment",
+        "frames": 40003
+      }
+    ],
+    "aiff": [
+      {
+        "name": "an-independently-resized-title.aiff",
+        "size": 40118,
+        "sha256": "657f2458141ffff0aeb500ea6c1f04b44708b8ea4f5939665464fcf7843057a1",
+        "title": "an independently resized title across odd alignment",
+        "frames": 40003
+      }
+    ],
+    "png": [
+      {
+        "name": "pattern-23x17.png",
+        "size": 226,
+        "sha256": "787ecb37edc1d7b4cfa20a9cf1fc21fbefc9e1305eb89e84645932b91735ba9f",
+        "width": 23,
+        "height": 17
+      }
+    ]
+  },
+  "commands": [
+    {
+      "args": [
+        "ffmpeg",
+        "-hide_banner",
+        "-loglevel",
+        "error",
+        "-y",
+        "-f",
+        "u8",
+        "-ar",
+        "8000",
+        "-ac",
+        "1",
+        "-i",
+        "reclay/examples/river.raw",
+        "-metadata",
+        "title=river",
+        "-c:a",
+        "pcm_u8",
+        "reclay/examples/river.wav"
+      ],
+      "exit": 0
+    },
+    {
+      "args": [
+        "ffmpeg",
+        "-hide_banner",
+        "-loglevel",
+        "error",
+        "-y",
+        "-f",
+        "u8",
+        "-ar",
+        "8000",
+        "-ac",
+        "1",
+        "-i",
+        "reclay/examples/river.raw",
+        "-metadata",
+        "title=river",
+        "-c:a",
+        "pcm_s8",
+        "reclay/examples/river.aiff"
+      ],
+      "exit": 0
+    },
+    {
+      "args": [
+        "ffmpeg",
+        "-hide_banner",
+        "-loglevel",
+        "error",
+        "-y",
+        "-f",
+        "u8",
+        "-ar",
+        "12000",
+        "-ac",
+        "1",
+        "-i",
+        "reclay/examples/riverbend.raw",
+        "-metadata",
+        "title=riverbend",
+        "-c:a",
+        "pcm_u8",
+        "reclay/examples/riverbend.wav"
+      ],
+      "exit": 0
+    },
+    {
+      "args": [
+        "ffmpeg",
+        "-hide_banner",
+        "-loglevel",
+        "error",
+        "-y",
+        "-f",
+        "u8",
+        "-ar",
+        "12000",
+        "-ac",
+        "1",
+        "-i",
+        "reclay/examples/riverbend.raw",
+        "-metadata",
+        "title=riverbend",
+        "-c:a",
+        "pcm_s8",
+        "reclay/examples/riverbend.aiff"
+      ],
+      "exit": 0
+    },
+    {
+      "args": [
+        "ffmpeg",
+        "-hide_banner",
+        "-loglevel",
+        "error",
+        "-y",
+        "-f",
+        "u8",
+        "-ar",
+        "16000",
+        "-ac",
+        "1",
+        "-i",
+        "reclay/examples/skyline-observation.raw",
+        "-metadata",
+        "title=skyline-observation",
+        "-c:a",
+        "pcm_u8",
+        "reclay/examples/skyline-observation.wav"
+      ],
+      "exit": 0
+    },
+    {
+      "args": [
+        "ffmpeg",
+        "-hide_banner",
+        "-loglevel",
+        "error",
+        "-y",
+        "-f",
+        "u8",
+        "-ar",
+        "16000",
+        "-ac",
+        "1",
+        "-i",
+        "reclay/examples/skyline-observation.raw",
+        "-metadata",
+        "title=skyline-observation",
+        "-c:a",
+        "pcm_s8",
+        "reclay/examples/skyline-observation.aiff"
+      ],
+      "exit": 0
+    },
+    {
+      "args": [
+        "ffmpeg",
+        "-hide_banner",
+        "-loglevel",
+        "error",
+        "-y",
+        "-f",
+        "u8",
+        "-ar",
+        "8000",
+        "-ac",
+        "1",
+        "-i",
+        "reclay/examples/an-independently-resized-title.raw",
+        "-metadata",
+        "title=an independently resized title across odd alignment",
+        "-c:a",
+        "pcm_u8",
+        "reclay/examples/an-independently-resized-title.wav"
+      ],
+      "exit": 0
+    },
+    {
+      "args": [
+        "ffmpeg",
+        "-hide_banner",
+        "-loglevel",
+        "error",
+        "-y",
+        "-f",
+        "u8",
+        "-ar",
+        "8000",
+        "-ac",
+        "1",
+        "-i",
+        "reclay/examples/an-independently-resized-title.raw",
+        "-metadata",
+        "title=an independently resized title across odd alignment",
+        "-c:a",
+        "pcm_s8",
+        "reclay/examples/an-independently-resized-title.aiff"
+      ],
+      "exit": 0
+    },
+    {
+      "args": [
+        "ffmpeg",
+        "-hide_banner",
+        "-loglevel",
+        "error",
+        "-y",
+        "-f",
+        "lavfi",
+        "-i",
+        "testsrc=size=11x7:rate=1",
+        "-frames:v",
+        "1",
+        "-update",
+        "1",
+        "reclay/examples/pattern-11x7.png"
+      ],
+      "exit": 0
+    },
+    {
+      "args": [
+        "ffmpeg",
+        "-hide_banner",
+        "-loglevel",
+        "error",
+        "-y",
+        "-f",
+        "lavfi",
+        "-i",
+        "testsrc=size=13x9:rate=1",
+        "-frames:v",
+        "1",
+        "-update",
+        "1",
+        "reclay/examples/pattern-13x9.png"
+      ],
+      "exit": 0
+    },
+    {
+      "args": [
+        "ffmpeg",
+        "-hide_banner",
+        "-loglevel",
+        "error",
+        "-y",
+        "-f",
+        "lavfi",
+        "-i",
+        "testsrc=size=19x11:rate=1",
+        "-frames:v",
+        "1",
+        "-update",
+        "1",
+        "reclay/examples/pattern-19x11.png"
+      ],
+      "exit": 0
+    },
+    {
+      "args": [
+        "ffmpeg",
+        "-hide_banner",
+        "-loglevel",
+        "error",
+        "-y",
+        "-f",
+        "lavfi",
+        "-i",
+        "testsrc=size=23x17:rate=1",
+        "-frames:v",
+        "1",
+        "-update",
+        "1",
+        "reclay/examples/pattern-23x17.png"
+      ],
+      "exit": 0
+    }
+  ]
+}
