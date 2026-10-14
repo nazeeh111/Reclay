@@ -6,9 +6,19 @@ Give Reclay related files. For pointer-bearing layouts, mark the same variable-s
 
 The learner receives bytes only. It does not use extensions, format names, magic-signature databases, an LLM, a supplied specification or the generating application's source.
 
-![Actual studio resizing a title and rewriting two distant addresses](docs/relocation-studio.jpg)
+[**Try Reclay in your browser →**](https://nazeeh111.github.io/Reclay/relocation.html)
 
-The original [nested block studio](docs/studio.png) remains available.
+![Actual browser Python engine resizing a title and rewriting two distant addresses](docs/browser-lab.jpg)
+
+The [local pointer studio](docs/relocation-studio.jpg) and [nested block studio](docs/studio.png) remain available.
+
+## Run it in your browser
+
+[Open the browser laboratory](https://nazeeh111.github.io/Reclay/) or [go straight to pointer relocation](https://nazeeh111.github.io/Reclay/relocation.html). Both studios run the same shipped Python engine locally inside a Web Worker, using [Pyodide](https://pyodide.org/). No installation, model API, account or computation server is required. First computation downloads the pinned Python runtime from jsDelivr; this is not an offline-first guarantee. Your files and models stay in the browser.
+
+The worker checks its Python source against the shipped manifest before loading it. Cancel stops the worker; the next operation creates a fresh one. Download edited files and ordinary standalone Python editors, then verify edits with an independent reader. The original local studio remains available below. [Browser architecture and limits](docs/browser-lab.md) describe hosting, source checks and cancellation.
+
+For your own static deployment, build into a new directory using `python scripts/build_browser_lab.py --out /tmp/reclay-browser-new`, then serve it over localhost HTTP or HTTPS. The release includes the complete source-bearing browser lab ZIP. Opening file:// directly is unsupported.
 
 ## Keep internal pointers connected
 
@@ -35,7 +45,7 @@ python3 relocation-editor.py rebuild fresh.bin replacement.bin edited-again.bin 
 Python 3.10 or later, no runtime dependencies:
 
 ```sh
-python3 -m pip install ./reclay-0.2.0-py3-none-any.whl
+python3 -m pip install ./reclay-0.3.0-py3-none-any.whl
 reclay serve
 ```
 
