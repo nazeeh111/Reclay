@@ -38,6 +38,8 @@ async function fileBytes(file, limit = MAX) {
   return data;
 }
 async function api(path, body) {
+  if (window.ReclayTransport?.enabled)
+    return window.ReclayTransport.request(path, body);
   const response = await fetch(
     path,
     body === undefined
@@ -457,4 +459,9 @@ $("model-upload").onchange = safe(async () => {
   tell(
     "Imported model is checked by the server before inspecting, rebuilding or exporting.",
   );
+});
+
+document.addEventListener("reclay-runtime-reset", (event) => {
+  invalidatePreview();
+  tell(event.detail, true);
 });

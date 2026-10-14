@@ -25,7 +25,7 @@ files = {
     "LICENSE": (ROOT / "LICENSE").read_bytes(),
     "manifest.json": (EX / "manifest.json").read_bytes(),
 }
-files["README.txt"] = b"""Reclay 0.2 portable relocation experiment
+files["README.txt"] = b"""Reclay 0.3 portable relocation experiment
 
 Python 3.10+, standard library only. No installation or server needed.
 
@@ -60,7 +60,7 @@ files["bundle-manifest.json"] = (
 ).encode()
 out = ROOT / "dist"
 out.mkdir(exist_ok=True)
-target = out / "reclay-relocation-lab-0.2.0.zip"
+target = out / "reclay-relocation-lab-0.3.0.zip"
 with zipfile.ZipFile(target, "w", zipfile.ZIP_DEFLATED) as archive:
     for name, data in sorted(files.items()):
         info = zipfile.ZipInfo(name, (2026, 10, 13, 0, 0, 0))

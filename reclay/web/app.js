@@ -79,6 +79,8 @@ function message(value, kind = "") {
   $("status").className = "status" + (kind ? " " + kind : "");
 }
 async function request(path, body) {
+  if (window.ReclayTransport?.enabled)
+    return window.ReclayTransport.request(path, body);
   const response = await fetch(
     path,
     body === undefined
@@ -903,15 +905,26 @@ $("download-codec").addEventListener("click", () =>
     );
   }),
 );
-request("/api/health")
-  .then((result) => {
-    $("runtime").textContent = "Local · v" + result.version;
-  })
-  .catch(() => {
-    $("runtime").textContent = "Server unavailable";
-    message(
-      "Reclay is not reachable. Start the local server and refresh this page.",
-      "error",
-    );
-  });
+if (!window.ReclayTransport?.enabled) {
+  request("/api/health")
+    .then((result) => {
+      $("runtime").textContent = "Local · v" + result.version;
+    })
+    .catch(() => {
+      $("runtime").textContent = "Server unavailable";
+      message(
+        "Reclay is not reachable. Start the local server and refresh this page.",
+        "error",
+      );
+    });
+}
 renderCorpus();
+
+document.addEventListener("reclay-runtime-reset", (event) => {
+  state.serial++;
+  for (const workspace of state.workspaces.values()) workspace.preview = null;
+  state.busy = false;
+  controls();
+  if (state.document) renderChanges();
+  message(event.detail, "error");
+});
