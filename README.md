@@ -44,6 +44,8 @@ python3 relocation-editor.py rebuild fresh.bin replacement.bin edited-again.bin 
 
 Python 3.10 or later, no runtime dependencies:
 
+Download the [Python wheel](https://github.com/nazeeh111/Reclay/releases/download/v0.3.0/reclay-0.3.0-py3-none-any.whl) from the [v0.3.0 release](https://github.com/nazeeh111/Reclay/releases/tag/v0.3.0). From the directory where you saved it, run:
+
 ```sh
 python3 -m pip install ./reclay-0.3.0-py3-none-any.whl
 reclay serve
