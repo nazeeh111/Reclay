@@ -30,13 +30,13 @@
     },
     {
       "path": "relocation.js",
-      "bytes": 14510,
-      "sha256": "ee96d1f6c5e33dd15a9b57bba7f6f182d13b06105e7e6ee2e8a62153596a8a1a"
+      "bytes": 14938,
+      "sha256": "d7e9e3aaa2e7ecf2c1c2194af84e810e6f1b690cffdceb03a96186064eca2419"
     },
     {
       "path": "browser-transport.js",
-      "bytes": 7800,
-      "sha256": "9b241397d002237d665106faf3f5205aa8bc1ca859193f3513cadd87d387bc96"
+      "bytes": 8047,
+      "sha256": "6380281996b32e414f72bb39b43214988a4cd2e7a4cf7b31e8f568983bcefe66"
     },
     {
       "path": "browser-worker.mjs",

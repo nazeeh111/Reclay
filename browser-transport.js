@@ -148,30 +148,38 @@
       const manifest = await (
         await readAsset("examples/relocation/manifest.json")
       ).json();
-      async function observation(item) {
+      async function exampleData(name) {
         if (
-          typeof item.name !== "string" ||
-          item.name.includes("/") ||
-          item.name.includes("\\") ||
-          item.name === ".."
+          typeof name !== "string" ||
+          name.includes("/") ||
+          name.includes("\\") ||
+          name === ".."
         )
           throw Error("Invalid example name.");
         const data = new Uint8Array(
           await (
-            await readAsset("examples/relocation/" + item.name)
+            await readAsset("examples/relocation/" + name)
           ).arrayBuffer(),
         );
+        return b64(data);
+      }
+      async function observation(item) {
         return {
           name: item.name,
           start: item.start,
           end: item.end,
-          data: b64(data),
+          data: await exampleData(item.name),
         };
       }
+      const replacementName = manifest.heldout[0].payload;
       return {
         description: manifest.description,
         samples: await Promise.all(manifest.training.map(observation)),
         working: await observation(manifest.working),
+        replacement: {
+          name: replacementName,
+          data: await exampleData(replacementName),
+        },
       };
     }
     const url = new URL(path, location.origin),

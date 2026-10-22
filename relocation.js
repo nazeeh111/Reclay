@@ -180,8 +180,15 @@ async function inspect() {
   if (rev !== revision) return;
   documentInfo = doc;
   $("encoding").value = "hex";
-  $("payload").value =
-    doc.payloadHex || hex(working.bytes.subarray(request.start, request.end));
+  const exampleReplacement =
+    working.exampleReplacement &&
+    request.start === working.start &&
+    request.end === working.end
+      ? working.exampleReplacement
+      : null;
+  $("payload").value = exampleReplacement
+    ? hex(exampleReplacement)
+    : doc.payloadHex || hex(working.bytes.subarray(request.start, request.end));
   $("terminator").checked = false;
   $("payload").disabled = false;
   $("preview").disabled = false;
@@ -191,9 +198,9 @@ async function inspect() {
     (doc.fields || []).length +
     " observed relationships; all other envelope bytes preserved. This does not prove unobserved dependencies.";
   updatePayloadSize();
-  tell(
-    "The working file fits this interpretation. Draft an edit to preview its byte rewrites.",
-  );
+  tell(exampleReplacement
+    ? "The working file fits. A shorter independently produced title is ready; preview its pointer rewrites."
+    : "The working file fits this interpretation. Draft an edit to preview its byte rewrites.");
 }
 function selectModel(m) {
   invalidateDocument();
@@ -316,7 +323,11 @@ $("example").onclick = safe(async () => {
   if (rev !== revision) return;
   samples = answer.samples.map((s) => ({ ...s, bytes: from64(s.data) }));
   renderSamples();
-  setWorking({ ...answer.working, bytes: from64(answer.working.data) });
+  setWorking({
+    ...answer.working,
+    bytes: from64(answer.working.data),
+    exampleReplacement: from64(answer.replacement.data),
+  });
   $("description").textContent = answer.description;
   tell(
     "Loaded independent TIFF observations and a withheld working file. Learn their relationships.",
