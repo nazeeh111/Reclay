@@ -22,7 +22,7 @@ For your own static deployment, build into a new directory using `python scripts
 
 ## Keep internal pointers connected
 
-Open **Learn internal pointers** in the studio. Load the TIFF experiment, learn its relationships, and inspect the withheld file. A larger description moves private metadata and image pixels. The learned editor rewrites the description's byte count and both addresses, preserving the remaining bytes. Preview shows the actual field values before and after; download a separate file or export a guarded standalone Python editor.
+Open **Learn internal pointers** in the studio. Load the TIFF experiment, learn its relationships, and inspect the withheld file. The example preloads an independently produced shorter title so your first preview actually moves private metadata and image pixels. You can replace it with your own bytes, including a longer description. The learned editor rewrites the description's byte count and both addresses, preserving the remaining bytes. Preview shows the actual field values before and after; download a separate file or export a guarded standalone Python editor.
 
 The examples are real Pillow-generated TIFF files containing original synthetic pixels and metadata. The inference engine receives file bytes and explicitly supplied matching spans; it does not receive TIFF tags or the writer's specification. Odd/even lengths resolve zero padding. A 70 KiB observation distinguishes integer encodings that fit shorter examples. New shorter, longer and 80 KiB replacements are checked against independently produced Pillow files and an independent FFmpeg decoder. [Evidence and exact scope](docs/relocation-validation.md) describe what was replicated.
 

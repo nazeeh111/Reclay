@@ -138,24 +138,32 @@ class Handler(BaseHTTPRequestHandler):
                     (ROOT / "examples/relocation/manifest.json").read_text()
                 )
 
-                def observation(item):
-                    name = item["name"]
+                def example_data(name):
                     if pathlib.Path(name).name != name:
                         raise ValueError("Invalid example name")
+                    return base64.b64encode(
+                        (ROOT / "examples/relocation" / name).read_bytes()
+                    ).decode()
+
+                def observation(item):
+                    name = item["name"]
                     return {
                         "name": name,
                         "start": item["start"],
                         "end": item["end"],
-                        "data": base64.b64encode(
-                            (ROOT / "examples/relocation" / name).read_bytes()
-                        ).decode(),
+                        "data": example_data(name),
                     }
 
+                replacement_name = manifest["heldout"][0]["payload"]
                 return self.send(
                     200,
                     {
                         "samples": [observation(x) for x in manifest["training"]],
                         "working": observation(manifest["working"]),
+                        "replacement": {
+                            "name": replacement_name,
+                            "data": example_data(replacement_name),
+                        },
                         "description": manifest["description"],
                     },
                 )

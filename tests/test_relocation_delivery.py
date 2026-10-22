@@ -55,6 +55,10 @@ class RelocationDelivery(unittest.TestCase):
         try:
             samples = json.loads(request("/api/relocation-examples"))
             self.assertEqual(len(samples["samples"]), len(self.samples))
+            self.assertEqual(
+                base64.b64decode(samples["replacement"]["data"]),
+                (EX / self.manifest["heldout"][0]["payload"]).read_bytes(),
+            )
             model = json.loads(
                 request("/api/relocation/infer", {"samples": samples["samples"]})
             )["models"][0]
