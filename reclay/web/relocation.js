@@ -70,6 +70,7 @@ function invalidateDocument() {
   invalidatePreview();
   documentInfo = null;
   $("payload").disabled = true;
+  $("restore-payload").disabled = true;
   $("preview").disabled = true;
   $("terminator").disabled = true;
   $("payload-size").textContent = "";
@@ -191,6 +192,7 @@ async function inspect() {
     : doc.payloadHex || hex(working.bytes.subarray(request.start, request.end));
   $("terminator").checked = false;
   $("payload").disabled = false;
+  $("restore-payload").disabled = false;
   $("preview").disabled = false;
   renderGraph(doc);
   $("guard").textContent =
@@ -263,7 +265,10 @@ function payload() {
 }
 function updatePayloadSize() {
   try {
-    $("payload-size").textContent = payload().length + " replacement bytes";
+    const size = payload().length;
+    const originalSize = coordinates().end - coordinates().start;
+    const delta = size - originalSize;
+    $("payload-size").textContent = `${originalSize} → ${size} span bytes · ${delta > 0 ? "+" : ""}${delta} before alignment`;
   } catch (e) {
     $("payload-size").textContent = e.message;
   }
@@ -361,6 +366,17 @@ $("infer").onclick = safe(async () => {
   }
 });
 $("inspect").onclick = safe(inspect);
+$("restore-payload").onclick = () => {
+  if (!documentInfo) return;
+  const { start, end } = coordinates();
+  invalidatePreview();
+  $("encoding").value = "hex";
+  $("payload").value = hex(working.bytes.subarray(start, end));
+  $("terminator").checked = false;
+  $("terminator").disabled = true;
+  updatePayloadSize();
+  tell("Current span restored from the working file. Preview again to check the result; the original file is untouched.");
+};
 ["start", "end"].forEach((id) => ($(id).oninput = invalidateDocument));
 $("payload").oninput = () => {
   invalidatePreview();
