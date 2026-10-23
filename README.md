@@ -80,7 +80,7 @@ Binary format inference, grammar learning and generated editors have substantial
 
 Reclay's contribution is a small complete local workflow: retain alternative rules from raw observations, make the uncertainty actionable, edit supported nested layouts losslessly, and take the inferred codec away as ordinary standalone code. It does not claim the invention of format inference or maintainer endorsement.
 
-The included files were generated for this project by FFmpeg, using deterministic synthetic signals and images. `reclay/examples/manifest.json` records the producer, commands, hashes and held-out identities. No third-party source is embedded in the runtime. Original product code is MIT licensed. Developed and reviewed with Codex.
+The included files were generated for this project by FFmpeg, using deterministic synthetic signals and images. `reclay/examples/manifest.json` records the producer, commands, hashes and held-out identities. No third-party source is embedded in the runtime. Original product code is MIT licensed.
 
 ## Terminal workflow
 
