@@ -10,8 +10,8 @@
     },
     {
       "path": "relocation.html",
-      "bytes": 7906,
-      "sha256": "37b189061430f75811aec892fb86962181dd54ebaecb8b4477ec9b9ce75754a8"
+      "bytes": 8145,
+      "sha256": "32490a5f49820c405239bed7bd33088e09367dae9bf349e029bec99f2eb579b7"
     },
     {
       "path": "style.css",
@@ -30,8 +30,8 @@
     },
     {
       "path": "relocation.js",
-      "bytes": 14938,
-      "sha256": "d7e9e3aaa2e7ecf2c1c2194af84e810e6f1b690cffdceb03a96186064eca2419"
+      "bytes": 15670,
+      "sha256": "7c3664bea8ba5f1ce27589655ee8bdbb1cd9231db4d5c49c03edca73b403fe75"
     },
     {
       "path": "browser-transport.js",
