@@ -5,14 +5,14 @@ root.mkdir(parents=True, exist_ok=True)
 ffmpeg = shutil.which("ffmpeg")
 if not ffmpeg:
     raise SystemExit("Install FFmpeg to regenerate the independent example files")
-    manifest = {
-        "producer": subprocess.check_output(
-            [ffmpeg, "-version"], text=True
-        ).splitlines()[0],
-        "training": {},
-        "heldOut": {},
-        "commands": [],
-    }
+manifest = {
+    "producer": subprocess.check_output(
+        [ffmpeg, "-version"], text=True
+    ).splitlines()[0],
+    "training": {},
+    "heldOut": {},
+    "commands": [],
+}
 for group, title, count in [
     ("training", "river", 40003),
     ("training", "riverbend", 40107),
