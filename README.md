@@ -74,12 +74,6 @@ Encrypted/compressed payload semantics, arbitrary pointer graphs beyond the mark
 
 There is no universal format recovery or automatic repair of arbitrary corruption. Contradictory observations, damaged checksums, excessive sizes and unsupported structures are rejected. Boundary experiments matter: short even-length samples cannot distinguish every padding or integer-width rule.
 
-## Prior work
-
-Binary format inference, grammar learning and generated editors have substantial prior work. [Kaitai Struct](https://doc.kaitai.io/serialization.html) already generates reading and writing code from supplied specifications. [ImHex](https://github.com/WerWolv/ImHex/releases) supports pattern-based save editors. [Netzob](https://netzob.github.io/netzob/index.html) supports protocol inference and relationship fields including sizes, padding and CRC32. [BinPRE](https://github.com/ecnusse/BinPRE) recovers protocol fields using executable instrumentation. [FormatFuzzer](https://github.com/uds-se/FormatFuzzer) compiles supplied templates into parsers and generators.
-
-Reclay's contribution is a small complete local workflow: retain alternative rules from raw observations, make the uncertainty actionable, edit supported nested layouts losslessly, and take the inferred codec away as ordinary standalone code. It does not claim the invention of format inference or maintainer endorsement.
-
 The included files were generated for this project by FFmpeg, using deterministic synthetic signals and images. `reclay/examples/manifest.json` records the producer, commands, hashes and held-out identities. No third-party source is embedded in the runtime. Original product code is MIT licensed.
 
 ## Terminal workflow
