@@ -2,11 +2,11 @@
 
 **Turn examples of a binary format into a standalone editor.**
 
-Give Reclay related files. For pointer-bearing layouts, mark the same variable-sized span in each observation and learn its byte counts, zero padding and absolute suffix pointers. For tagged blocks, it searches for rules governing tagged blocks, their lengths, padding and checksums, then compiles the surviving model into a dependency-free Python codec. Inspect a fresh file, resize a block, and watch its enclosing sizes, later positions and checksums change. Keep opaque payloads and original padding intact when they are untouched.
+Learn lengths, padding, checksums and marked-span pointers from related binary files. Resize a supported block, inspect the changed fields, and export a dependency-free Python editor.
 
-The learner receives bytes only. It does not use extensions, format names, magic-signature databases, an LLM, a supplied specification or the generating application's source.
+The learner works from bytes and supplied matching spans, without a format specification or language model. A learned model describes the observed file family; it is not a complete specification.
 
-[**Try Reclay in your browser →**](https://nazeeh111.github.io/Reclay/relocation.html)
+[Try pointer relocation in your browser](https://nazeeh111.github.io/Reclay/relocation.html)
 
 ![Actual browser Python engine resizing a title and rewriting two distant addresses](docs/browser-lab.jpg)
 
@@ -21,6 +21,8 @@ The worker checks its Python source against the shipped manifest before loading 
 For your own static deployment, build into a new directory using `python scripts/build_browser_lab.py --out /tmp/reclay-browser-new`, then serve it over localhost HTTP or HTTPS. The release includes the complete source-bearing browser lab ZIP. Opening file:// directly is unsupported.
 
 ## Keep internal pointers connected
+
+For pointer-bearing layouts, mark the same variable-sized span in each observation. Reclay searches byte-count, zero-padding and absolute suffix-pointer relationships. For tagged blocks, it searches length, padding and checksum rules. A surviving model compiles into a standalone Python codec; untouched opaque payloads and original padding stay intact. Extensions, format names, magic-signature databases and the generating application's source are not learner inputs.
 
 Open **Learn internal pointers** in the studio. Load the TIFF experiment, learn its relationships, and inspect the withheld file. The example preloads an independently produced shorter title so your first preview actually moves private metadata and image pixels. You can replace it with your own bytes, including a longer description. The learned editor rewrites the description's byte count and both addresses, preserving the remaining bytes. The replacement counter shows the current span, draft size and byte difference before alignment. **Restore current span** recovers the exact working-file bytes after an experiment or refused edit. Preview shows the actual field values before and after; download a separate file or export a guarded standalone Python editor.
 
