@@ -5,7 +5,7 @@ const MAX_JSON = 12 * 1024 * 1024;
 const MAX_SOURCE = 1024 * 1024;
 const SOURCES = ["__init__.py", "engine.py", "standalone.py", "relocation.py", "browser_dispatch.py"];
 const ROUTES = new Set([
-  "/api/health", "/health", "/api/infer", "/api/parse", "/api/edit", "/api/export",
+  "/api/health", "/health", "/api/infer", "/api/ensemble-identity", "/api/validate-hypotheses", "/api/parse", "/api/edit", "/api/export",
   "/api/relocation/infer", "/api/relocation/inspect", "/api/relocation/resize", "/api/relocation/export",
 ]);
 const encoder = new TextEncoder();

@@ -991,3 +991,83 @@ def rebuild(document, model, edits=None):
     result = bytes(updated) + body
     parse(result, model)
     return result
+
+
+def ensemble_sha256(ensemble):
+    """Identity of the exact bounded JSON value, not an authenticity signature."""
+    try:
+        value = json.dumps(ensemble, sort_keys=True, separators=(",", ":"), ensure_ascii=True, allow_nan=False).encode("ascii")
+    except (TypeError, ValueError, RecursionError, UnicodeError):
+        _fail("invalid-ensemble", "Ensemble must be bounded JSON data")
+    if len(value) > 9 * MAX_FILE:
+        _fail("invalid-ensemble", "Ensemble exceeds 9 MiB")
+    return hashlib.sha256(value).hexdigest()
+
+
+def validate_hypotheses(ensemble, samples, *, expected_sha256):
+    """Test every declared candidate against independent byte identities."""
+    actual = ensemble_sha256(ensemble)
+    if type(expected_sha256) is not str or expected_sha256 != actual:
+        _fail("stale-ensemble", "Expected ensemble SHA256 does not match")
+    if type(ensemble) is not dict or type(ensemble.get("models")) is not list:
+        _fail("invalid-ensemble", "Expected an inferred ensemble")
+    models = ensemble["models"]
+    if not 1 <= len(models) <= MAX_MODELS or type(ensemble.get("truncated")) is not bool:
+        _fail("invalid-ensemble", "Ensemble model count or truncation state is invalid")
+    receipts = ensemble.get("evidence")
+    if type(receipts) is not list:
+        _fail("invalid-ensemble", "Training sample identities are missing")
+    for model in models:
+        validate_model(model)
+        if model["evidence"]["samples"] != receipts:
+            _fail("invalid-ensemble", "Model and ensemble training identities differ")
+    if len({model["id"] for model in models}) != len(models):
+        _fail("invalid-ensemble", "Duplicate model identities")
+    previous = ensemble.get("holdoutEvidence", [])
+    if type(previous) is not list or len(previous) > 128:
+        _fail("invalid-ensemble", "Prior holdout identities are invalid")
+    for receipt in previous:
+        if (type(receipt) is not dict or set(receipt) != {"size", "sha256"}
+            or type(receipt["size"]) is not int or not 1 <= receipt["size"] <= MAX_FILE
+            or type(receipt["sha256"]) is not str or len(receipt["sha256"]) != 64
+            or any(c not in "0123456789abcdef" for c in receipt["sha256"])):
+            _fail("invalid-ensemble", "Prior holdout identity is invalid")
+    if type(samples) is not list or not 1 <= len(samples) <= MAX_CORPUS:
+        _fail("holdout-bound", "Provide 1 to 8 holdout samples")
+    samples = [_blob(data) for data in samples]
+    if sum(map(len, samples)) > MAX_CORPUS_BYTES or len(models)*len(samples) > 256 or len(models)*sum(map(len, samples)) > 64*MAX_FILE or len(previous)+len(samples)>128:
+        _fail("holdout-work-bound", "Holdout exceeds the fixed work or evidence limit")
+    new = [{"size": len(data), "sha256": hashlib.sha256(data).hexdigest()} for data in samples]
+    training = {r["sha256"] for r in receipts}
+    prior = [r["sha256"] for r in previous]
+    incoming = [r["sha256"] for r in new]
+    if (len(set(prior)) != len(prior) or training.intersection(prior)
+        or len(set(incoming)) != len(incoming) or set(incoming).intersection(training | set(prior))):
+        _fail("reused-sample", "A holdout identity repeats training or holdout evidence")
+    # Only structural incompatibilities contradict a candidate; resource bounds or
+    # internal validation failures are not evidence against a model.
+    contradictions = {"prefix-bound", "prefix-mismatch", "outer-size-mismatch", "truncated-header", "invalid-tag", "invalid-length", "checksum-mismatch", "truncated-padding", "chunk-evidence", "container-prefix", "container-shape"}
+    survivors, outcomes = [], []
+    for model in models:
+        findings = []
+        for data, receipt in zip(samples, new):
+            try:
+                document = parse(data, model)
+                if rebuild(document, model) != data:
+                    _fail("roundtrip-mismatch", "Rebuilt bytes differ from the holdout")
+                findings.append({"sha256": receipt["sha256"], "status": "consistent"})
+            except ReclayError as error:
+                if error.code not in contradictions and error.code != "roundtrip-mismatch":
+                    _fail("holdout-inconclusive", "A candidate could not be evaluated within existing bounds", modelId=model["id"], reason=error.code)
+                findings.append({"sha256": receipt["sha256"], "status": "refused", "code": error.code, "message": str(error)})
+        accepted = all(f["status"] == "consistent" for f in findings)
+        outcomes.append({"modelId": model["id"], "status": "consistent" if accepted else "refused", "samples": findings})
+        if accepted:
+            survivors.append(model)
+    result = dict(ensemble)
+    result.update({"status": "consistent" if survivors else "no-survivors", "models": survivors,
+                   "holdoutEvidence": previous + new,
+                   "validation": {"sourceEnsembleSha256": actual, "outcomes": outcomes,
+                                  "note": "Byte-distinct holdouts are not proof of independent provenance, completeness, uniqueness or format semantics."}})
+    ensemble_sha256(result)  # Refuse oversize results before any output is published.
+    return result

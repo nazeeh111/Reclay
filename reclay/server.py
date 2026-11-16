@@ -4,7 +4,7 @@ import base64, hashlib, json, multiprocessing, pathlib, threading, time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlsplit, parse_qs
 from . import __version__
-from .engine import infer, parse, rebuild
+from .engine import infer, parse, rebuild, validate_hypotheses, ensemble_sha256
 from .standalone import export_standalone
 from .relocation import (
     infer_relocation,
@@ -243,6 +243,25 @@ class Handler(BaseHTTPRequestHandler):
                 return self.send(
                     200, {"data": base64.b64encode(output).decode(), "changes": changes}
                 )
+            if self.path == "/api/ensemble-identity":
+                if set(obj) != {"ensemble"}:
+                    raise ValueError("Provide exactly one ensemble")
+                return self.send(200, {"sha256": ensemble_sha256(obj["ensemble"])})
+            if self.path == "/api/validate-hypotheses":
+                if set(obj) != {"ensemble", "expectedSha256", "samples"} or type(obj["samples"]) is not list or not 1 <= len(obj["samples"]) <= 8:
+                    raise ValueError("Provide an ensemble identity and 1–8 holdouts")
+                data = []
+                for item in obj["samples"]:
+                    if type(item) is not dict or set(item) - {"data", "name"} or "data" not in item:
+                        raise ValueError("Holdout needs binary data")
+                    data.append(decode(item["data"]))
+                if not INFER_LOCK.acquire(blocking=False):
+                    raise ValueError("An inference or validation is running. Try again after it finishes")
+                try:
+                    result = validate_hypotheses(obj["ensemble"], data, expected_sha256=obj["expectedSha256"])
+                finally:
+                    INFER_LOCK.release()
+                return self.send(200, result)
             if self.path == "/api/infer":
                 return self.send(200, bounded_infer(obj["samples"]))
             if self.path == "/api/export":
