@@ -1468,3 +1468,9 @@ label.button:has(+ input:focus) {
   outline: none;
   box-shadow: inset 0 0 0 2px #fff, inset 0 0 0 4px #294bbb;
 }
+
+/* The native file input stays keyboard reachable. */
+label[for="schema-file"] { margin-top: 12px; }
+label[for="schema-file"]:has(+ input:focus-visible) {
+  outline: 3px solid var(--blue, #164d77); outline-offset: 3px;
+}

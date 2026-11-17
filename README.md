@@ -92,6 +92,24 @@ Every candidate is parsed and rebuilt byte-for-byte against every holdout. The r
 
 The same operation is available to Python callers as `reclay.engine.validate_hypotheses`, and as `/api/validate-hypotheses` in the local server and browser dispatcher. In the studio, infer the collection, choose fresh files under **Check independent files**, then select **Validate candidates**. The results show survivors and refusal codes; save the validation record if you need its evidence. File-read, identity, or work-limit failures leave the prior ensemble unchanged. Selecting a model is still explicit after validation.
 
+## Reopen saved work
+
+In the tagged-block studio, use **Open saved schema or record** to load a saved
+selected grammar, inferred ensemble or validation record, including an empty
+survivor record for inspection. Choose a candidate explicitly, then open a working
+binary file. Originals are not embedded in the JSON and must be supplied again.
+Check fresh holdouts to continue validation; recorded byte identities still refuse
+reused evidence. A selected schema does not retain the original search coverage
+or holdout record, so its search is shown as incomplete.
+
+The same bounded Python model validator checks imports in the local server and
+browser worker. JSON/reading/validation/cancellation errors preserve the current
+workspace. Replacing an opened working file asks for confirmation first. A
+successful import replaces the workspace and clears prior drafts and
+previews. Imported histories are recorded claims: opening does not authenticate
+their origin, rerun prior checks or establish completeness or uniqueness. Keep
+the separate validation record when saving the selected schema.
+
 ## Terminal workflow
 
 ```sh

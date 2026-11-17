@@ -82,6 +82,9 @@
           <button id="infer" class="primary wide" type="button" disabled>
             Infer structure <span aria-hidden="true">→</span>
           </button>
+          <label class="button secondary" for="schema-file">Open saved schema or record</label>
+          <input id="schema-file" class="visually-hidden" type="file" accept=".json,.reclay,application/json" aria-label="Open saved schema or record" aria-describedby="schema-help" />
+          <p id="schema-help" class="support">Reopen a selected schema or candidate record. Recorded evidence is not authenticated; original files are not included.</p>
           <div id="evidence-summary" class="evidence-summary" hidden></div>
           <details id="experiment-details" class="details" hidden>
             <summary>Experiments &amp; limits</summary>

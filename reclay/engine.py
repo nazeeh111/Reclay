@@ -1009,29 +1009,10 @@ def validate_hypotheses(ensemble, samples, *, expected_sha256):
     actual = ensemble_sha256(ensemble)
     if type(expected_sha256) is not str or expected_sha256 != actual:
         _fail("stale-ensemble", "Expected ensemble SHA256 does not match")
-    if type(ensemble) is not dict or type(ensemble.get("models")) is not list:
-        _fail("invalid-ensemble", "Expected an inferred ensemble")
+    _validate_ensemble(ensemble)
     models = ensemble["models"]
-    if not 1 <= len(models) <= MAX_MODELS or type(ensemble.get("truncated")) is not bool:
-        _fail("invalid-ensemble", "Ensemble model count or truncation state is invalid")
-    receipts = ensemble.get("evidence")
-    if type(receipts) is not list:
-        _fail("invalid-ensemble", "Training sample identities are missing")
-    for model in models:
-        validate_model(model)
-        if model["evidence"]["samples"] != receipts:
-            _fail("invalid-ensemble", "Model and ensemble training identities differ")
-    if len({model["id"] for model in models}) != len(models):
-        _fail("invalid-ensemble", "Duplicate model identities")
+    receipts = ensemble["evidence"]
     previous = ensemble.get("holdoutEvidence", [])
-    if type(previous) is not list or len(previous) > 128:
-        _fail("invalid-ensemble", "Prior holdout identities are invalid")
-    for receipt in previous:
-        if (type(receipt) is not dict or set(receipt) != {"size", "sha256"}
-            or type(receipt["size"]) is not int or not 1 <= receipt["size"] <= MAX_FILE
-            or type(receipt["sha256"]) is not str or len(receipt["sha256"]) != 64
-            or any(c not in "0123456789abcdef" for c in receipt["sha256"])):
-            _fail("invalid-ensemble", "Prior holdout identity is invalid")
     if type(samples) is not list or not 1 <= len(samples) <= MAX_CORPUS:
         _fail("holdout-bound", "Provide 1 to 8 holdout samples")
     samples = [_blob(data) for data in samples]
@@ -1071,3 +1052,71 @@ def validate_hypotheses(ensemble, samples, *, expected_sha256):
                                   "note": "Byte-distinct holdouts are not proof of independent provenance, completeness, uniqueness or format semantics."}})
     ensemble_sha256(result)  # Refuse oversize results before any output is published.
     return result
+
+
+def _validate_ensemble(ensemble, *, allow_empty=False):
+    """Shared structural admission; claims and identities are not authentication."""
+    if type(ensemble) is not dict or type(ensemble.get("models")) is not list:
+        _fail("invalid-ensemble", "Expected an inferred ensemble")
+    models = ensemble["models"]
+    if not (0 if allow_empty else 1) <= len(models) <= MAX_MODELS or type(ensemble.get("truncated")) is not bool:
+        _fail("invalid-ensemble", "Ensemble model count or truncation state is invalid")
+    receipts = ensemble.get("evidence")
+    if type(receipts) is not list:
+        _fail("invalid-ensemble", "Training sample identities are missing")
+    for model in models:
+        validate_model(model)
+        if model["evidence"]["samples"] != receipts:
+            _fail("invalid-ensemble", "Model and ensemble training identities differ")
+    if len({model["id"] for model in models}) != len(models):
+        _fail("invalid-ensemble", "Duplicate model identities")
+    previous = ensemble.get("holdoutEvidence", [])
+    if type(previous) is not list or len(previous) > 128:
+        _fail("invalid-ensemble", "Prior holdout identities are invalid")
+    for receipt in previous:
+        if (type(receipt) is not dict or set(receipt) != {"size", "sha256"}
+            or type(receipt["size"]) is not int or not 1 <= receipt["size"] <= MAX_FILE
+            or type(receipt["sha256"]) is not str or len(receipt["sha256"]) != 64
+            or any(c not in "0123456789abcdef" for c in receipt["sha256"])):
+            _fail("invalid-ensemble", "Prior holdout identity is invalid")
+
+
+def open_schema(record):
+    """Reopen bounded JSON data without executing it or replaying claimed checks."""
+    ensemble_sha256(record)
+    kind = "ensemble"
+    if type(record) is dict and "models" not in record:
+        model = validate_model(record)
+        kind = "selected-model"
+        record = {
+            "status": "ambiguous", "models": [model],
+            "evidence": model["evidence"]["samples"], "truncated": True,
+            "truncationReasons": ["A selected schema does not retain ensemble search coverage."],
+            "experiments": [], "limits": {},
+        }
+    _validate_ensemble(record, allow_empty=True)
+    for key in ("truncationReasons", "experiments"):
+        if type(record.get(key, [])) is not list or len(record.get(key, [])) > 256:
+            _fail("invalid-ensemble", "Invalid recorded " + key)
+    if type(record.get("limits", {})) is not dict:
+        _fail("invalid-ensemble", "Invalid recorded limits")
+    if "validation" in record and type(record["validation"]) is not dict:
+        _fail("invalid-ensemble", "Invalid recorded validation")
+    # Empty survivor records have no model through which to check training receipts.
+    receipts = record["evidence"]
+    if not 2 <= len(receipts) <= MAX_CORPUS:
+        _fail("invalid-ensemble", "Record needs 2 to 8 training identities")
+    seen = set()
+    total = 0
+    for receipt in receipts:
+        if (type(receipt) is not dict or set(receipt) != {"size", "sha256"}
+            or type(receipt["size"]) is not int or not 1 <= receipt["size"] <= MAX_FILE
+            or type(receipt["sha256"]) is not str or len(receipt["sha256"]) != 64
+            or any(c not in "0123456789abcdef" for c in receipt["sha256"])):
+            _fail("invalid-ensemble", "Invalid training identity")
+        seen.add(receipt["sha256"])
+        total += receipt["size"]
+    prior = [receipt["sha256"] for receipt in record.get("holdoutEvidence", [])]
+    if len(seen) < 2 or total > MAX_CORPUS_BYTES or len(set(prior)) != len(prior) or seen.intersection(prior):
+        _fail("invalid-ensemble", "Invalid or repeated evidence identities")
+    return {"ensemble": record, "sha256": ensemble_sha256(record), "kind": kind}

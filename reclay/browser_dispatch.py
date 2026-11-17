@@ -9,7 +9,7 @@ import hashlib
 import json
 
 from . import __version__
-from .engine import infer, parse, rebuild, validate_hypotheses, ensemble_sha256
+from .engine import infer, parse, rebuild, validate_hypotheses, ensemble_sha256, open_schema
 from .relocation import (
     infer_relocation,
     inspect_relocation,
@@ -26,6 +26,7 @@ ROUTES = {
     "/api/infer": ({"samples"}, set()),
     "/api/validate-hypotheses": ({"ensemble", "expectedSha256", "samples"}, set()),
     "/api/ensemble-identity": ({"ensemble"}, set()),
+    "/api/open-schema": ({"record"}, set()),
     "/api/parse": ({"data", "model"}, set()),
     "/api/edit": ({"data", "model"}, {"edits"}),
     "/api/export": ({"model"}, set()),
@@ -109,6 +110,8 @@ def dispatch(path, body):
         relocation = path == "/api/relocation/infer"
         data, spans = _observations(body["samples"], relocation)
         result = infer_relocation(data, spans) if relocation else infer(data)
+    elif path == "/api/open-schema":
+        result = open_schema(body["record"])
     elif path == "/api/ensemble-identity":
         result = {"sha256": ensemble_sha256(body["ensemble"])}
     elif path == "/api/validate-hypotheses":

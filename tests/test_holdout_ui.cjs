@@ -2,7 +2,7 @@
 const test=require('node:test'), assert=require('node:assert/strict'), fs=require('node:fs'), vm=require('node:vm');
 const fixture=JSON.parse(fs.readFileSync(process.argv[2] || require('node:path').join(__dirname,'fixtures/holdout-ui.json'), 'utf8'));
 function harness() {
-  const elements=new Map(), downloads=[];
+  const elements=new Map(), downloads=[], listeners={};
   class Element {
     constructor(){this.hidden=false;this.disabled=false;this.textContent='';this.value='';this.children=[];this.handlers={};this.dataset={};this.classList={toggle(){},add(){},remove(){}};}
     addEventListener(type,fn){this.handlers[type]=fn;}
@@ -12,9 +12,14 @@ function harness() {
     click(){downloads.push({name:this.download, url:this.href})}
     remove(){}
   }
-  const document={getElementById(id){if(!elements.has(id))elements.set(id,new Element());return elements.get(id)},createElement(){return new Element()},querySelectorAll(){return []},addEventListener(){},body:new Element()};
+  const document={getElementById(id){if(!elements.has(id))elements.set(id,new Element());return elements.get(id)},createElement(){return new Element()},querySelectorAll(){return []},addEventListener(type,fn){listeners[type]=fn},body:new Element()};
   const calls=[];let pending=null;let fail=false;
   const transport={enabled:true,async request(path,body){calls.push({path,body});
+    if(path==='/api/open-schema'){
+      if(fail)throw Error('invalid-model');
+      if(pending)return await pending;
+      return {ensemble:body.record,sha256:fixture.digest,kind:'ensemble'};
+    }
     if(path==='/api/ensemble-identity')return {sha256:fixture.digest};
     if(path==='/api/validate-hypotheses'){
       if(fail)throw Error('holdout-work-bound');
@@ -25,10 +30,10 @@ function harness() {
   }};
   let savedBlob;
   const urls={createObjectURL(blob){savedBlob=blob;return 'blob:test'},revokeObjectURL(){}};
-  const c=vm.createContext({document,window:{ReclayTransport:transport},Blob,URL:urls,setTimeout(fn){fn()},TextEncoder,TextDecoder,Uint8Array,Map,Promise,Error,JSON,String,Number,Array,console,atob:s=>Buffer.from(s,'base64').toString('binary'),btoa:s=>Buffer.from(s,'binary').toString('base64')});
+  const c=vm.createContext({document,window:{ReclayTransport:transport,confirm:()=>true},Blob,URL:urls,setTimeout(fn){fn()},TextEncoder,TextDecoder,Uint8Array,Map,Promise,Error,JSON,String,Number,Array,console,atob:s=>Buffer.from(s,'base64').toString('binary'),btoa:s=>Buffer.from(s,'binary').toString('base64')});
   vm.runInContext(fs.readFileSync(process.env.RECLAY_APP_JS || require.resolve('../reclay/web/app.js'),'utf8'),c);
   const run=s=>vm.runInContext(s,c);run('state.result = '+JSON.stringify(fixture.source)+'; renderCandidates();');
-  return {c,run,el:id=>document.getElementById(id),calls,downloads,getBlob:()=>savedBlob,setPending(p){pending=p},setFail(x){fail=x}};
+  return {c,run,el:id=>document.getElementById(id),calls,downloads,getBlob:()=>savedBlob,setPending(p){pending=p},setFail(x){fail=x},event(type,detail){listeners[type]({detail})}};
 }
 async function select(h, file){h.el('holdout-files').handlers.change({target:{files:[file],value:'x'}});await new Promise(r=>setImmediate(r));}
 const goodFile={name:'hold.bin',size:2,async arrayBuffer(){return Uint8Array.from([1,2]).buffer}};
@@ -71,4 +76,48 @@ test('model selection changed during a pending validation is rejected',async()=>
   resolve(fixture.result);await waiting;
   assert.equal(h.run('state.result.models.length'),3);
   assert.match(h.el('status').textContent,/changed during validation/);
+});
+
+test('saved record import commits only after admission and requires explicit model selection',async()=>{
+  const h=harness();
+  h.run('state.model=state.result.models[0]; state.workspaces.set("old",{preview:{data:"AQI="},drafts:new Map()});');
+  const original=h.run('state.result');
+  const native={name:'saved.json',size:300,async arrayBuffer(){return new TextEncoder().encode(JSON.stringify(fixture.result)).buffer}};
+  h.setFail(true);
+  h.el('schema-file').handlers.change({target:{files:[native],value:'x'}});
+  await new Promise(r=>setImmediate(r));
+  assert.equal(h.run('state.result'),original);
+  assert.equal(h.run('state.workspaces.size'),1);
+  assert.match(h.el('status').textContent,/invalid-model/);
+  h.setFail(false);
+  h.run('window.confirm=()=>false');
+  h.el('schema-file').handlers.change({target:{files:[native],value:'x'}});
+  await new Promise(r=>setImmediate(r));
+  assert.equal(h.run('state.result'),original);
+  assert.equal(h.run('state.workspaces.size'),1);
+  assert.match(h.el('status').textContent,/workspace was kept/);
+  h.run('window.confirm=()=>true');
+  h.el('schema-file').handlers.change({target:{files:[native],value:'x'}});
+  await new Promise(r=>setImmediate(r));
+  assert.equal(h.run('state.model'),null);
+  assert.equal(h.run('state.workspaces.size'),0);
+  assert.equal(h.run('state.result.models.length'),1);
+  assert.match(h.el('candidate-status').textContent,/not authenticated/);
+});
+
+test('cancelled import preserves completed bytes and cannot unlock a newer operation',async()=>{
+  const h=harness();let resolve;
+  h.run('state.workspaces.set("old",{preview:{data:"AQI="},drafts:new Map()});');
+  const original=h.run('state.result');
+  h.setPending(new Promise(r=>resolve=r));
+  const native={name:'saved.json',size:300,async arrayBuffer(){return new TextEncoder().encode(JSON.stringify(fixture.result)).buffer}};
+  h.el('schema-file').handlers.change({target:{files:[native],value:'x'}});
+  await new Promise(r=>setImmediate(r));
+  h.event('reclay-runtime-reset','Cancelled task.');
+  assert.equal(h.run('state.workspaces.get("old").preview.data'),'AQI=');
+  h.run('state.operationId++; state.busy=true;');
+  resolve({ensemble:fixture.result,sha256:fixture.digest,kind:'ensemble'});
+  await new Promise(r=>setImmediate(r));
+  assert.equal(h.run('state.result'),original);
+  assert.equal(h.run('state.busy'),true);
 });

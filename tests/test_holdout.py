@@ -14,6 +14,38 @@ def writer(n, alignment=4, other=None):
     return b''.join(pieces)
 
 class Holdout(unittest.TestCase):
+    def test_saved_record_reopens_without_inference_or_lost_identities(self):
+        # Value: protects=save/reopen/continue; seam=none; synthetic byte family only.
+        from reclay import engine
+        saved = self.admit([writer(12)])
+        opened = engine.open_schema(json.loads(json.dumps(saved)))
+        self.assertEqual(opened["ensemble"], saved)
+        self.assertEqual(opened["sha256"], ensemble_sha256(saved))
+        continued = validate_hypotheses(opened["ensemble"], [writer(5)], expected_sha256=opened["sha256"])
+        self.assertEqual(len(continued["models"]), 1)
+        self.assertEqual(len(continued["holdoutEvidence"]), 2)
+        self.assertEqual(continued["evidence"], self.ensemble["evidence"])
+        model = saved["models"][0]
+        selected = engine.open_schema(model)
+        self.assertEqual(selected["ensemble"]["models"], [model])
+        self.assertTrue(selected["ensemble"]["truncated"])
+        self.assertNotEqual(selected["ensemble"]["status"], "unique")
+        self.assertEqual(dispatch("/api/open-schema", {"record": saved}), opened)
+        rejected = self.admit([writer(5)[:-3]])
+        self.assertEqual(engine.open_schema(rejected)["ensemble"]["models"], [])
+        for edit in (
+            {"models": [dict(model, id="0" * 64)]},
+            {"truncated": "false"},
+            {"truncationReasons": {}},
+            {"evidence": []},
+            {"validation": []},
+            {"models": [model, model]},
+        ):
+            bad = dict(saved, **edit)
+            with self.subTest(edit=edit):
+                with self.assertRaises(ReclayError):
+                    engine.open_schema(bad)
+
     @classmethod
     def setUpClass(cls):
         cls.training=[writer(4),writer(8)]
@@ -88,6 +120,10 @@ class Holdout(unittest.TestCase):
         try:
             payload={'ensemble':self.ensemble,'expectedSha256':self.digest,'samples':[{'data':base64.b64encode(writer(5)).decode()}]}
             conn=http.client.HTTPConnection('127.0.0.1',server.server_port,timeout=5)
+            conn.request('POST','/api/open-schema',json.dumps({'record':self.ensemble}),{'Content-Type':'application/json'})
+            response=conn.getresponse();self.assertEqual(response.status,200);opened=json.loads(response.read());self.assertEqual(opened['ensemble'],self.ensemble);self.assertEqual(opened['sha256'],self.digest)
+            conn.request('POST','/api/open-schema',json.dumps({'record':{'models':[]}}),{'Content-Type':'application/json'})
+            response=conn.getresponse();self.assertEqual(response.status,400);response.read()
             conn.request('POST','/api/ensemble-identity',json.dumps({'ensemble':self.ensemble}),{'Content-Type':'application/json'})
             response=conn.getresponse();self.assertEqual(response.status,200);self.assertEqual(json.loads(response.read())['sha256'],self.digest)
             conn.request('POST','/api/validate-hypotheses',json.dumps(payload),{'Content-Type':'application/json'})

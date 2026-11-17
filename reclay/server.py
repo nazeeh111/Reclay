@@ -4,7 +4,7 @@ import base64, hashlib, json, multiprocessing, pathlib, threading, time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlsplit, parse_qs
 from . import __version__
-from .engine import infer, parse, rebuild, validate_hypotheses, ensemble_sha256
+from .engine import infer, parse, rebuild, validate_hypotheses, ensemble_sha256, open_schema
 from .standalone import export_standalone
 from .relocation import (
     infer_relocation,
@@ -243,6 +243,10 @@ class Handler(BaseHTTPRequestHandler):
                 return self.send(
                     200, {"data": base64.b64encode(output).decode(), "changes": changes}
                 )
+            if self.path == "/api/open-schema":
+                if set(obj) != {"record"}:
+                    raise ValueError("Provide exactly one saved record")
+                return self.send(200, open_schema(obj["record"]))
             if self.path == "/api/ensemble-identity":
                 if set(obj) != {"ensemble"}:
                     raise ValueError("Provide exactly one ensemble")
