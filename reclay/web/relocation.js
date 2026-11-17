@@ -481,7 +481,12 @@ $("export").onclick = safe(async () => {
 $("model-upload").onchange = safe(async () => {
   const f = $("model-upload").files[0];
   if (!f) return;
+  const rev = revision;
   const obj = JSON.parse(new TextDecoder().decode(await fileBytes(f, 3 * MAX)));
+  // Validate before replacing the current workspace. Export validates numeric
+  // model data without executing code or depending on the current working file.
+  await api("/api/relocation/export", { model: obj });
+  if (rev !== revision) return;
   invalidateModel();
   renderModels({ models: [obj], status: "imported" });
   $("model-upload").value = "";
