@@ -82,6 +82,9 @@
           <button id="infer" class="primary wide" type="button" disabled>
             Infer structure <span aria-hidden="true">→</span>
           </button>
+          <label class="button secondary" for="schema-file">Open saved schema or record</label>
+          <input id="schema-file" class="visually-hidden" type="file" accept=".json,.reclay,application/json" aria-label="Open saved schema or record" aria-describedby="schema-help" />
+          <p id="schema-help" class="support">Reopen a selected schema or candidate record. Recorded evidence is not authenticated; original files are not included.</p>
           <div id="evidence-summary" class="evidence-summary" hidden></div>
           <details id="experiment-details" class="details" hidden>
             <summary>Experiments &amp; limits</summary>
@@ -113,6 +116,17 @@
             aria-label="Candidate interpretations"
           ></div>
           <p id="candidate-status" class="support" hidden></p>
+          <section id="holdout-panel" aria-label="Validate with holdout files" hidden>
+            <h3>Check independent files</h3>
+            <p class="support">Select files not used for inference. Byte hashes detect repeats; they cannot prove independent origin. A match is not proof of a unique grammar.</p>
+            <label class="button secondary" for="holdout-files">Choose holdout files</label>
+            <input id="holdout-files" class="visually-hidden" type="file" multiple aria-label="Choose holdout files" />
+            <ul id="holdout-list" class="file-list" aria-label="Holdout files"></ul>
+            <p id="holdout-status" class="support" role="status">No holdout validation yet.</p>
+            <button id="validate-holdouts" class="secondary" type="button" disabled>Validate candidates</button>
+            <button id="download-validation" class="text-button" type="button" disabled>Save validation record</button>
+            <details id="holdout-details" class="details" hidden><summary>Survivors and refusals</summary><pre id="holdout-outcomes"></pre></details>
+          </section>
           <details id="model-details" class="details" hidden>
             <summary>Inspect this grammar</summary>
             <pre id="model-json"></pre>

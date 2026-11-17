@@ -3,8 +3,12 @@ const $ = (id) => document.getElementById(id);
 const LIMIT = 1048576;
 const state = {
   corpus: [],
+  holdouts: [],
+  validationGeneration: 0,
   targets: [],
   result: null,
+  imported: false,
+  validationFresh: false,
   model: null,
   candidate: -1,
   target: null,
@@ -12,6 +16,7 @@ const state = {
   selected: null,
   workspaces: new Map(),
   busy: false,
+  operationId: 0,
   serial: 0,
 };
 const encoder = new TextEncoder();
@@ -108,6 +113,10 @@ async function request(path, body) {
 function controls() {
   $("infer").disabled = state.busy || state.corpus.length < 2;
   $("corpus-files").disabled = state.busy;
+  $("schema-file").disabled = state.busy;
+  $("holdout-files").disabled = state.busy || !state.result || !(state.result.models || []).length;
+  $("validate-holdouts").disabled = state.busy || !state.result || !state.holdouts.length || !(state.result.models || []).length;
+  $("download-validation").disabled = state.busy || !state.result?.validation;
   $("target-upload").disabled = state.busy;
   $("target-file").disabled = state.busy;
   for (const button of document.querySelectorAll(
@@ -128,16 +137,19 @@ function controls() {
 }
 async function operation(label, action) {
   if (state.busy) return;
+  const id = ++state.operationId;
   state.busy = true;
   controls();
   message(label, "busy");
   try {
     await action();
   } catch (error) {
-    message(error.message || String(error), "error");
+    if (id === state.operationId) message(error.message || String(error), "error");
   } finally {
-    state.busy = false;
-    controls();
+    if (id === state.operationId) {
+      state.busy = false;
+      controls();
+    }
   }
 }
 function file(name, data) {
@@ -157,7 +169,14 @@ async function readFile(nativeFile) {
   );
 }
 function invalidate() {
+  state.validationGeneration++;
+  state.holdouts = [];
+  $("holdout-panel").hidden = true;
+  $("holdout-list").replaceChildren();
+  $("holdout-details").hidden = true;
   state.result = null;
+  state.imported = false;
+  state.validationFresh = false;
   state.model = null;
   state.candidate = -1;
   state.document = null;
@@ -173,6 +192,44 @@ function invalidate() {
   $("experiment-details").hidden = true;
   renderEditor();
 }
+$("schema-file").addEventListener("change", (event) => {
+  const incoming = event.target.files[0];
+  event.target.value = "";
+  if (!incoming) return;
+  operation("Checking the saved schema or record…", async () => {
+    if (!incoming.size || incoming.size > 12 * LIMIT)
+      throw Error("Saved records must contain between 1 byte and 12 MiB.");
+    const generation = state.validationGeneration;
+    const source = state.result;
+    const raw = await incoming.arrayBuffer();
+    if (!raw.byteLength || raw.byteLength > 12 * LIMIT)
+      throw Error("Saved records must contain between 1 byte and 12 MiB.");
+    let record;
+    try {
+      record = JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(raw));
+    } catch {
+      throw Error("This is not a UTF-8 JSON schema or record. The current workspace was kept.");
+    }
+    const opened = await request("/api/open-schema", { record });
+    if (generation !== state.validationGeneration || source !== state.result)
+      throw Error("The workspace changed while the record was checked. No record was applied.");
+    if (state.workspaces.size && !window.confirm("Replace the current workspace? Save any edited files and schemas first.")) {
+      message("Open cancelled. The current workspace was kept.");
+      return;
+    }
+    // Commit only after all reading and shared Python admission have succeeded.
+    invalidate();
+    state.corpus = [];
+    state.targets = [];
+    state.target = null;
+    state.workspaces.clear();
+    state.result = opened.ensemble;
+    state.imported = true;
+    renderCorpus();
+    renderCandidates();
+    message("Opened " + incoming.name + ". " + (state.result.models.length ? "Choose a candidate explicitly, then open a working file." : "No surviving candidates are recorded. Inspect the record or infer from a new collection.") + " Recorded checks were not rerun; evidence is not authenticated.");
+  });
+});
 function renderCorpus() {
   $("corpus-count").textContent = state.corpus.length + " files";
   $("corpus-list").replaceChildren();
@@ -305,6 +362,8 @@ function renderCandidates() {
     button.append(
       heading,
       el("small", "", modelSummary(model)),
+      el("small", "", "Model " + model.id),
+      el("small", "", state.imported && !state.validationFresh ? "Imported record · evidence is not authenticated" : state.result.validation ? "Holdout: consistent with recorded samples" : "Holdout: not yet checked"),
       el(
         "small",
         "",
@@ -344,12 +403,18 @@ function renderCandidates() {
     : "";
   $("candidate-status").hidden = false;
   $("candidate-status").classList.toggle("incomplete", truncated);
-  $("candidate-status").textContent = truncated
+  $("candidate-status").textContent = state.imported && !state.validationFresh
+    ? "Imported " + models.length + " candidate(s). Choose one explicitly and check fresh files. Recorded checks were not rerun; evidence is not authenticated." + (truncated ? " The saved search was incomplete." : "")
+    : truncated
     ? "Incomplete search. " +
       models.length +
       " candidates survived the explored hypotheses, but other explanations may exist. No uniqueness claim is established." +
       reasonText +
       " Inspect Experiments & limits before choosing."
+    : state.result.validation
+      ? models.length
+        ? models.length + " candidates remain consistent with the checked holdouts. Choose one explicitly; this does not establish uniqueness."
+        : "No candidates survived the holdout checks. Inspect the refusal details."
     : unique
       ? "One candidate matches this evidence within the supported hypothesis family. Choose it explicitly to inspect a file."
       : models.length
@@ -370,8 +435,8 @@ function renderCandidates() {
     el(
       "p",
       "small-copy",
-      state.corpus.length +
-        " observed files. Matching this corpus is evidence, not a guarantee for every file." +
+      (state.imported ? (state.result.evidence || []).length + " recorded training identities; original bytes are not loaded. " : state.corpus.length + " observed files. ") +
+        "Matching this corpus is evidence, not a guarantee for every file." +
         (truncated
           ? " Search bounds were reached; more hypotheses may survive." +
             reasonText
@@ -379,13 +444,106 @@ function renderCandidates() {
     ),
   );
   $("experiments").textContent = json({
+    note: state.imported ? "Imported suggestions and prior checks are recorded claims, not a fresh inference or authenticated evidence." : state.result.validation ? "Suggestions come from the original inference and were not recomputed after holdout validation." : "Suggestions come from the current inference.",
     experiments: state.result.experiments || [],
     limits: state.result.limits || {},
     truncated,
     truncationReasons: reasons,
   });
   $("experiment-details").hidden = false;
+  $("holdout-panel").hidden = !models.length && !state.result.validation;
+  renderHoldouts();
 }
+function renderHoldouts() {
+  $("holdout-list").replaceChildren();
+  for (const sample of state.holdouts) {
+    const item = el("li", "file-item");
+    const copy = el("div", "file-copy");
+    copy.append(el("strong", "", sample.name), el("small", "", size(sample.size)));
+    const remove = el("button", "remove-file", "×");
+    remove.type = "button";
+    remove.setAttribute("aria-label", "Remove holdout " + sample.name);
+    remove.addEventListener("click", () => {
+      if (state.busy) return;
+      state.validationGeneration++;
+      state.holdouts = state.holdouts.filter((x) => x.id !== sample.id);
+      renderHoldouts();
+    });
+    item.append(copy, remove);
+    $("holdout-list").append(item);
+  }
+  const prior = state.result?.validation;
+  $("holdout-details").hidden = !prior;
+  if (prior) $("holdout-outcomes").textContent = json(prior);
+  $("holdout-status").textContent = state.holdouts.length
+    ? state.holdouts.length + " holdout files selected but not yet checked. " + (prior ? "The prior validation still applies to its recorded files." : "The candidates have no holdout validation yet.")
+    : state.imported && !state.validationFresh
+      ? "Imported record. Prior checks were not rerun and are not authenticated. Choose fresh holdouts to check the candidates."
+      : prior
+        ? "Validation recorded for the shown ensemble. Results describe only the submitted byte identities; choose a survivor explicitly."
+        : "No holdout validation yet. Candidate matches describe training files only.";
+  controls();
+}
+$("holdout-files").addEventListener("change", (event) => {
+  const files = Array.from(event.target.files);
+  event.target.value = "";
+  if (!files.length) return;
+  operation("Reading holdout files…", async () => {
+    if (state.holdouts.length + files.length > 8) throw Error("Use at most 8 holdout files.");
+    const generation = state.validationGeneration;
+    const source = state.result;
+    const incoming = await Promise.all(files.map(readFile));
+    if (generation !== state.validationGeneration || source !== state.result)
+      throw Error("The candidate evidence changed while files were read. Choose holdouts again.");
+    if ([...state.holdouts, ...incoming].reduce((n, x) => n + x.size, 0) > 4 * LIMIT)
+      throw Error("Holdout files exceed the 4 MiB total limit.");
+    state.validationGeneration++;
+    state.holdouts.push(...incoming);
+    renderHoldouts();
+    message("Holdout files selected. Validate the candidates before interpreting the new evidence.");
+  });
+});
+$("validate-holdouts").addEventListener("click", () =>
+  operation("Checking all candidates against holdouts…", async () => {
+    if (!state.result || !state.holdouts.length) throw Error("Choose an ensemble and holdout files first.");
+    const source = state.result;
+    const selectedModel = state.model;
+    const generation = state.validationGeneration;
+    const samples = state.holdouts.map(({ name, data }) => ({ name, data }));
+    const stillCurrent = () => generation === state.validationGeneration && source === state.result && selectedModel === state.model;
+    try {
+      const identity = await request("/api/ensemble-identity", { ensemble: source });
+      if (!stillCurrent()) throw Error("Candidate evidence changed during validation. No result was applied.");
+      const result = await request("/api/validate-hypotheses", { ensemble: source, expectedSha256: identity.sha256, samples });
+      if (!stillCurrent() || result.validation?.sourceEnsembleSha256 !== identity.sha256)
+        throw Error("Candidate evidence changed during validation. No result was applied.");
+      state.result = result;
+      state.validationFresh = true;
+      state.validationGeneration++;
+      state.holdouts = [];
+      state.model = null;
+      state.candidate = -1;
+      state.document = null;
+      state.selected = null;
+      $("model-details").hidden = true;
+      $("target-controls").hidden = true;
+      $("document-area").hidden = true;
+      $("parse-empty").hidden = false;
+      renderCandidates();
+      renderEditor();
+      message(result.truncated ? "Holdout check finished, but the original search was incomplete. Choose a surviving candidate explicitly." : result.models.length ? "Holdout check finished. Choose a surviving candidate explicitly; the result is not a uniqueness proof." : "No candidate survived the holdout checks. Inspect the refusal details.");
+    } catch (error) {
+      if (stillCurrent()) $("holdout-status").textContent = "Validation incomplete or refused; no new result was applied. " + (error.message || String(error));
+      throw error;
+    }
+  }),
+);
+$("download-validation").addEventListener("click", () => {
+  if (state.result?.validation) {
+    download("reclay-validation.json", json(state.result) + "\n", "application/json");
+    message("Downloaded the survivor ensemble and its holdout receipt.");
+  }
+});
 $("infer").addEventListener("click", () =>
   operation(
     "Testing structural hypotheses against every observation…",
@@ -393,7 +551,11 @@ $("infer").addEventListener("click", () =>
       const result = await request("/api/infer", {
         samples: state.corpus.map(({ name, data }) => ({ name, data })),
       });
+      state.validationGeneration++;
+      state.holdouts = [];
       state.result = result;
+      state.imported = false;
+      state.validationFresh = false;
       state.model = null;
       state.candidate = -1;
       state.document = null;
@@ -893,7 +1055,9 @@ $("download-schema").addEventListener("click", () => {
       json(state.model) + "\n",
       "application/json",
     );
-    message("Downloaded the exact selected grammar and its corpus evidence.");
+    message(state.result?.validation
+      ? "Downloaded the selected grammar. Save the separate validation record to retain holdout evidence."
+      : "Downloaded the exact selected grammar and its corpus evidence.");
   }
 });
 $("download-codec").addEventListener("click", () =>
@@ -901,7 +1065,8 @@ $("download-codec").addEventListener("click", () =>
     const result = await request("/api/export", { model: state.model });
     download(result.filename || "codec.py", result.source, "text/x-python");
     message(
-      "Downloaded the self-contained Python codec for this selected grammar.",
+      "Downloaded the self-contained Python codec for this selected grammar." +
+        (state.result?.validation ? " The validation record is a separate download." : ""),
     );
   }),
 );
@@ -922,7 +1087,9 @@ renderCorpus();
 
 document.addEventListener("reclay-runtime-reset", (event) => {
   state.serial++;
-  for (const workspace of state.workspaces.values()) workspace.preview = null;
+  state.validationGeneration++;
+  state.operationId++;
+  // Finished previews contain returned bytes and do not depend on a live worker.
   state.busy = false;
   controls();
   if (state.document) renderChanges();

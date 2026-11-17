@@ -5,28 +5,28 @@
   "files": [
     {
       "path": "index.html",
-      "bytes": 11247,
-      "sha256": "1c9f6ac4033095d085c358bdf0f37017f6c0bbf11a1da49159f0b25b12a694f8"
+      "bytes": 12807,
+      "sha256": "e94330ea33c6f99690ea813bc22a8da95611ea29300cf6b6d15ace1f703ca3a2"
     },
     {
       "path": "relocation.html",
-      "bytes": 8145,
-      "sha256": "32490a5f49820c405239bed7bd33088e09367dae9bf349e029bec99f2eb579b7"
+      "bytes": 8184,
+      "sha256": "b2c26e1b743676d398acaf76b37efabb1a3391a9be477dc0eeb014db10b7ceab"
     },
     {
       "path": "style.css",
-      "bytes": 21149,
-      "sha256": "2ac37d89fa27242b633bb8311af1cbd88a582bf76b6a3f3253e642c40d5fd77e"
+      "bytes": 23320,
+      "sha256": "b8a13286855a2e0ddc07d58c425abb9bae4130bafae0d8f3265cc3cdfd5b0dc9"
     },
     {
       "path": "relocation.css",
-      "bytes": 6806,
-      "sha256": "d44edede76834b2f2e6d069541d5515511ec81655bae32c97e9c435532ce165d"
+      "bytes": 7265,
+      "sha256": "81b2d54a3b18de439f8ff5dc18c8f3751d15cbabfbd75d1cb1adb769bc823b7e"
     },
     {
       "path": "app.js",
-      "bytes": 30689,
-      "sha256": "65efa4fd0ca1f4a49e366af0e6106465adfb18db484f952c8e5a7127cd92baba"
+      "bytes": 40063,
+      "sha256": "05f66a30a0c2925507586bd64fb269c1e6dde5be9558e591fb5d04c69ffb5de0"
     },
     {
       "path": "relocation.js",
@@ -40,8 +40,8 @@
     },
     {
       "path": "browser-worker.mjs",
-      "bytes": 7569,
-      "sha256": "0c47a36780e361a592b54748aa71f41274bbfab5e9ab9a3cbf14aad5407bb0b5"
+      "bytes": 7643,
+      "sha256": "4fee269024e0968ecf3c77522c7e86862294ded479dfeab0490da541c30abf08"
     },
     {
       "path": "python/__init__.py",
@@ -50,8 +50,8 @@
     },
     {
       "path": "python/engine.py",
-      "bytes": 38220,
-      "sha256": "f0c07ac0c6332d334a82c13e59dde3ced2eaee6995e0692e3af338eb4bd05e15"
+      "bytes": 45963,
+      "sha256": "3ae485b2758671b085f7c7b78e63c8afb6f713589228654375038e65e2934d00"
     },
     {
       "path": "python/standalone.py",
@@ -65,8 +65,8 @@
     },
     {
       "path": "python/browser_dispatch.py",
-      "bytes": 6893,
-      "sha256": "111130a64c4cffd3ea46a273352819eac621541c3f7ed6a7ff4dce21f19ae68f"
+      "bytes": 7877,
+      "sha256": "048c9cd54e6c202c25fdf4bccf4efc7c15b582aa8a70f1188a88297d1ce796c4"
     },
     {
       "path": "examples/an-independently-resized-title.aiff",
