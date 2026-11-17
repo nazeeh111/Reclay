@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="790" viewBox="0 0 1200 790" role="img" aria-labelledby="title desc">
+<title id="title">Reclay moves a title without losing its pointers</title>
+<desc id="desc">One actual synthetic TIFF shrinks from 1,008 to 976 bytes. The marked title changes from 48 to 16 bytes; integer fields at 74, 90 and 138 become 16, 208 and 162. Independent decoding preserves the 32 by 24 pixels and private metadata.</desc>
+<style>text{font-family:Arial,Helvetica,sans-serif;fill:#242d29}.muted{fill:#546257}.green{fill:#365e4d}.mono{font-family:"Courier New",Courier,monospace}</style>
+<rect width="1200" height="790" fill="#eee9df"/>
+<text x="44" y="48" font-size="30" font-weight="700" class="">reclay</text>
+<text x="44" y="120" font-size="54" font-weight="700" class="">Move the title. Keep the image.</text>
+<text x="44" y="164" font-size="18" font-weight="400" class="muted">An actual file edit, down to the byte.</text>
+<text x="44" y="234" font-size="22" font-weight="700" class="">Original · 1,008 bytes</text>
+<rect x="44.0000" y="250" width="161.0635" height="50" fill="#c5c9bc" stroke="#657564" stroke-width=".8"/>
+<rect x="205.0635" y="250" width="52.9524" height="50" fill="#365e4d" stroke="#657564" stroke-width=".8"/>
+<rect x="258.0159" y="250" width="50.7460" height="50" fill="#b3bdaa" stroke="#657564" stroke-width=".8"/>
+<rect x="308.7619" y="250" width="847.2381" height="50" fill="#d8dbce" stroke="#657564" stroke-width=".8"/>
+<text x="44.0" y="325" font-size="13" font-weight="400" class="mono">0</text>
+<text x="205.06349206349208" y="325" font-size="13" font-weight="400" class="mono">146</text>
+<text x="308.76190476190476" y="325" font-size="13" font-weight="400" class="mono">240</text>
+<text x="1118.0" y="325" font-size="13" font-weight="400" class="mono">1008</text>
+<text x="44" y="394" font-size="22" font-weight="700" class="">Edited · 976 bytes</text>
+<rect x="44.0000" y="410" width="161.0635" height="50" fill="#c5c9bc" stroke="#657564" stroke-width=".8"/>
+<rect x="205.0635" y="410" width="17.6508" height="50" fill="#365e4d" stroke="#657564" stroke-width=".8"/>
+<rect x="222.7143" y="410" width="50.7460" height="50" fill="#b3bdaa" stroke="#657564" stroke-width=".8"/>
+<rect x="273.4603" y="410" width="847.2381" height="50" fill="#d8dbce" stroke="#657564" stroke-width=".8"/>
+<text x="44.0" y="485" font-size="13" font-weight="400" class="mono">0</text>
+<text x="205.06349206349208" y="485" font-size="13" font-weight="400" class="mono">146</text>
+<text x="273.46031746031747" y="485" font-size="13" font-weight="400" class="mono">208</text>
+<text x="1082.6984126984128" y="485" font-size="13" font-weight="400" class="mono">976</text>
+<text x="44" y="535" font-size="23" font-weight="700" class="green">Marked title 48 → 16 bytes. Pixels move back 32 bytes; their content stays exact.</text>
+<path d="M44 586H384" stroke="#8e9a8a"/>
+<text x="44" y="606" font-size="22" font-weight="700" class="">Byte count</text>
+<text x="44" y="639" font-size="22" font-weight="400" class="mono">@74   48 → 16</text>
+<text x="44" y="673" font-size="18" font-weight="400" class="mono">30 00 00 00 →</text>
+<text x="44" y="699" font-size="18" font-weight="400" class="mono">10 00 00 00</text>
+<text x="44" y="727" font-size="15" font-weight="400" class="muted">4-byte little-endian integer</text>
+<path d="M422 586H762" stroke="#8e9a8a"/>
+<text x="422" y="606" font-size="22" font-weight="700" class="">Image data address</text>
+<text x="422" y="639" font-size="22" font-weight="400" class="mono">@90   240 → 208</text>
+<text x="422" y="673" font-size="18" font-weight="400" class="mono">f0 00 00 00 →</text>
+<text x="422" y="699" font-size="18" font-weight="400" class="mono">d0 00 00 00</text>
+<text x="422" y="727" font-size="15" font-weight="400" class="muted">4-byte little-endian integer</text>
+<path d="M800 586H1140" stroke="#8e9a8a"/>
+<text x="800" y="606" font-size="22" font-weight="700" class="">Private metadata address</text>
+<text x="800" y="639" font-size="22" font-weight="400" class="mono">@138   194 → 162</text>
+<text x="800" y="673" font-size="18" font-weight="400" class="mono">c2 00 00 00 →</text>
+<text x="800" y="699" font-size="18" font-weight="400" class="mono">a2 00 00 00</text>
+<text x="800" y="727" font-size="15" font-weight="400" class="muted">4-byte little-endian integer</text>
+<text x="44" y="775" font-size="18" font-weight="400" class="muted">Exact independent Pillow oracle; standalone Python rebuild. A fitted document family, not a universal format specification.</text>
+</svg>

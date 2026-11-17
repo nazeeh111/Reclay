@@ -46,3 +46,32 @@ test('changing the marked span disables recovery until a fresh inspection', () =
   assert.equal(h.el('payload').value, 'unaccepted long draft');
   assert.equal(h.run('documentInfo'), null);
 });
+
+test('refused imported model preserves the active model, draft and preview', async () => {
+  const h = harness();
+  const bytes = new TextEncoder().encode('{"id":"bad","fields":[]}');
+  h.el('model-upload').files = [{size: bytes.length, async arrayBuffer() { return bytes.buffer; }}];
+  h.run("model={id:'accepted-model'}; api=async()=>{throw Error('Unsupported model');}");
+  await h.el('model-upload').onchange();
+  assert.equal(h.run('model.id'), 'accepted-model');
+  assert.equal(h.el('payload').value, 'unaccepted long draft');
+  assert.equal(h.el('payload').disabled, false);
+  assert.equal(h.el('download').disabled, false);
+  assert.equal(h.run('result.bytes[0]'), 1);
+  assert.equal(h.el('status').textContent, 'Unsupported model');
+});
+
+test('a completed import cannot replace a workspace changed while validation waits', async () => {
+  const h = harness();
+  const bytes = new TextEncoder().encode('{"id":"incoming-model","fields":[]}');
+  h.el('model-upload').files = [{size: bytes.length, async arrayBuffer() { return bytes.buffer; }}];
+  h.run("model={id:'accepted-model'}; api=()=>new Promise(resolve=>{globalThis.finishValidation=resolve});");
+  const pending = h.el('model-upload').onchange();
+  await new Promise(resolve => setImmediate(resolve));
+  h.run('invalidatePreview()');
+  h.context.finishValidation({source:'validated'});
+  await pending;
+  assert.equal(h.run('model.id'), 'accepted-model');
+  assert.equal(h.el('payload').value, 'unaccepted long draft');
+  assert.notEqual(h.run('documentInfo'), null);
+});

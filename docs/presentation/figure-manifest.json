@@ -1,0 +1,14 @@
+{
+  "source": "9d4b6b008c6474afd4bc91a1ab19de36c15b9106",
+  "encoding": "common byte-position scale; observed integer words from exact files; semantic labels from separate Pillow reader",
+  "files": {
+    "working.tif": "b0b2d6dec233f34e5ae7fe6d6ac0a5256a9b604455d30d7cb2e6111fbb47dc00",
+    "edited.tif": "8d22d5be636d9f6fd3b9cc0411eb7dd0996e25edd18ecbd24203a955e5e09a3d",
+    "journey.json": "d0be722512517772c351a9d19a92eb3773631a4262f55046a78dd7cc9ac60eb0",
+    "figure.py": "268e286375cd741a5eb2ef9010ea9203c96304ec92362f9a84bad102c133edf2",
+    "byte-connections.svg": "2830a967b779f24e0e3eea1694a291bacaa8cf39eaa109aba0db44e230636831",
+    "byte-connections-mobile.svg": "4f1e33b906e4a193597f26b16f6e8f7e0600b8081f4256fdd39d51f3bc9f19d3",
+    "byte-connections.png": "548fadfd54e3b5c23dbf3bd93d5a2836c642f128f679203ddeee495b91b3f707",
+    "byte-connections-mobile.png": "ccced03df26847efdef014d510d793610a6c78ef58b0ae6be01260b885b56c7a"
+  }
+}

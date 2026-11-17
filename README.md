@@ -8,7 +8,19 @@ The learner works from bytes and supplied matching spans, without a format speci
 
 [Try pointer relocation in your browser](https://nazeeh111.github.io/Reclay/relocation.html)
 
+<picture>
+  <source media="(max-width: 600px)" srcset="docs/presentation/byte-connections-mobile.png">
+  <img src="docs/presentation/byte-connections.png" alt="Actual Reclay edit: a synthetic TIFF title shrinks from 48 to 16 bytes; count at 74 and addresses at 90 and 138 change, while independently decoded pixels and private metadata remain exact." width="100%">
+</picture>
+
+**Three integer rewrites. One intact image.** This current-source example turns a 1,008-byte file into 976 bytes, then exports an ordinary Python editor that reproduces the independent oracle in a fresh directory. [Inspect the exact bytes, executable example and decoder checks](docs/presentation/README.md).
+
+<details>
+<summary>Earlier browser laboratory capture</summary>
+
 ![Actual browser Python engine resizing a title and rewriting two distant addresses](docs/browser-lab.jpg)
+
+</details>
 
 The [local pointer studio](docs/relocation-studio.jpg) and [nested block studio](docs/studio.png) remain available.
 

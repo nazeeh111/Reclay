@@ -1,0 +1,161 @@
+{
+  "sourceHead": "9d4b6b008c6474afd4bc91a1ab19de36c15b9106",
+  "fullInference": {
+    "status": "unique",
+    "models": 1,
+    "truncated": false
+  },
+  "threeShortObservations": {
+    "status": "ambiguous",
+    "models": 48,
+    "truncated": false
+  },
+  "inspection": {
+    "kind": "relocation",
+    "modelId": "dc5d2a639e714d012c7f72ad36c05f57e5b8b019cab554f53cf8bce7a531d232",
+    "start": 146,
+    "end": 194,
+    "paddedEnd": 194,
+    "payloadHex": "41667465726c6966652066726573682066696c65206d65746164617461207468617420776173207769746868656c6400",
+    "bytes": 1008,
+    "sha256": "b0b2d6dec233f34e5ae7fe6d6ac0a5256a9b604455d30d7cb2e6111fbb47dc00",
+    "fields": [
+      {
+        "kind": "spanLength",
+        "region": "prefix",
+        "offset": 74,
+        "width": 4,
+        "endian": "little",
+        "targetOffset": null,
+        "anchorHex": null,
+        "site": 74,
+        "value": 48
+      },
+      {
+        "kind": "absoluteSuffixPointer",
+        "region": "prefix",
+        "offset": 90,
+        "width": 4,
+        "endian": "little",
+        "targetOffset": 46,
+        "anchorHex": "dbb850636b1db9a8",
+        "site": 90,
+        "value": 240,
+        "target": 240
+      },
+      {
+        "kind": "absoluteSuffixPointer",
+        "region": "prefix",
+        "offset": 138,
+        "width": 4,
+        "endian": "little",
+        "targetOffset": 0,
+        "anchorHex": "4f776e6564206f70",
+        "site": 138,
+        "value": 194,
+        "target": 194
+      }
+    ],
+    "alignment": 2,
+    "minimumLength": 5,
+    "scope": "Fixed document envelope; marked span semantics supplied explicitly"
+  },
+  "receipt": {
+    "kind": "relocation",
+    "modelId": "dc5d2a639e714d012c7f72ad36c05f57e5b8b019cab554f53cf8bce7a531d232",
+    "originalBytes": 1008,
+    "editedBytes": 976,
+    "sha256": "8d22d5be636d9f6fd3b9cc0411eb7dd0996e25edd18ecbd24203a955e5e09a3d",
+    "originalSha256": "b0b2d6dec233f34e5ae7fe6d6ac0a5256a9b604455d30d7cb2e6111fbb47dc00",
+    "start": 146,
+    "end": 162,
+    "paddedEnd": 162,
+    "changes": [
+      {
+        "kind": "spanLength",
+        "site": 74,
+        "newSite": 74,
+        "before": 48,
+        "after": 16
+      },
+      {
+        "kind": "absoluteSuffixPointer",
+        "site": 90,
+        "newSite": 90,
+        "before": 240,
+        "after": 208
+      },
+      {
+        "kind": "absoluteSuffixPointer",
+        "site": 138,
+        "newSite": 138,
+        "before": 194,
+        "after": 162
+      }
+    ],
+    "unchangedEnvelopeVerified": true
+  },
+  "exactPillowOracle": true,
+  "standaloneFreshDirectoryIsolatedPythonExact": true,
+  "modifiedOpaquePixelRefused": true,
+  "refusal": "{\"error\": {\"code\": \"family-guard\", \"message\": \"Untouched literal envelope differs from observed document family\", \"context\": {}}}\n",
+  "commands": [
+    {
+      "args": [
+        "infer-relocation",
+        "/Users/nazeeh/Documents/Codex/2026-11-17/portfolio-design/candidates/repositories/Reclay-design/source/reclay/examples/relocation/observations.json",
+        "--out",
+        "/Users/nazeeh/Documents/Codex/2026-11-17/portfolio-design/candidates/repositories/Reclay-design/source/docs/presentation/learned.json"
+      ],
+      "exit": 0,
+      "stdout": "{\"status\": \"unique\", \"models\": 1, \"schema\": \"/Users/nazeeh/Documents/Codex/2026-11-17/portfolio-design/candidates/repositories/Reclay-design/source/docs/presentation/learned.json\"}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "inspect-relocation",
+        "--schema",
+        "/Users/nazeeh/Documents/Codex/2026-11-17/portfolio-design/candidates/repositories/Reclay-design/source/docs/presentation/learned.json",
+        "/Users/nazeeh/Documents/Codex/2026-11-17/portfolio-design/candidates/repositories/Reclay-design/source/reclay/examples/relocation/working.tif",
+        "--start",
+        "146",
+        "--end",
+        "194"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"kind\": \"relocation\",\n  \"modelId\": \"dc5d2a639e714d012c7f72ad36c05f57e5b8b019cab554f53cf8bce7a531d232\",\n  \"start\": 146,\n  \"end\": 194,\n  \"paddedEnd\": 194,\n  \"payloadHex\": \"41667465726c6966652066726573682066696c65206d65746164617461207468617420776173207769746868656c6400\",\n  \"bytes\": 1008,\n  \"sha256\": \"b0b2d6dec233f34e5ae7fe6d6ac0a5256a9b604455d30d7cb2e6111fbb47dc00\",\n  \"fields\": [\n    {\n      \"kind\": \"spanLength\",\n      \"region\": \"prefix\",\n      \"offset\": 74,\n      \"width\": 4,\n      \"endian\": \"little\",\n      \"targetOffset\": null,\n      \"anchorHex\": null,\n      \"site\": 74,\n      \"value\": 48\n    },\n    {\n      \"kind\": \"absoluteSuffixPointer\",\n      \"region\": \"prefix\",\n      \"offset\": 90,\n      \"width\": 4,\n      \"endian\": \"little\",\n      \"targetOffset\": 46,\n      \"anchorHex\": \"dbb850636b1db9a8\",\n      \"site\": 90,\n      \"value\": 240,\n      \"target\": 240\n    },\n    {\n      \"kind\": \"absoluteSuffixPointer\",\n      \"region\": \"prefix\",\n      \"offset\": 138,\n      \"width\": 4,\n      \"endian\": \"little\",\n      \"targetOffset\": 0,\n      \"anchorHex\": \"4f776e6564206f70\",\n      \"site\": 138,\n      \"value\": 194,\n      \"target\": 194\n    }\n  ],\n  \"alignment\": 2,\n  \"minimumLength\": 5,\n  \"scope\": \"Fixed document envelope; marked span semantics supplied explicitly\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "relocate",
+        "--schema",
+        "/Users/nazeeh/Documents/Codex/2026-11-17/portfolio-design/candidates/repositories/Reclay-design/source/docs/presentation/learned.json",
+        "/Users/nazeeh/Documents/Codex/2026-11-17/portfolio-design/candidates/repositories/Reclay-design/source/reclay/examples/relocation/working.tif",
+        "--start",
+        "146",
+        "--end",
+        "194",
+        "--payload",
+        "/Users/nazeeh/Documents/Codex/2026-11-17/portfolio-design/candidates/repositories/Reclay-design/source/reclay/examples/relocation/replacement-0.bin",
+        "--out",
+        "/Users/nazeeh/Documents/Codex/2026-11-17/portfolio-design/candidates/repositories/Reclay-design/source/docs/presentation/edited.tif"
+      ],
+      "exit": 0,
+      "stdout": "{\"output\": \"/Users/nazeeh/Documents/Codex/2026-11-17/portfolio-design/candidates/repositories/Reclay-design/source/docs/presentation/edited.tif\", \"kind\": \"relocation\", \"modelId\": \"dc5d2a639e714d012c7f72ad36c05f57e5b8b019cab554f53cf8bce7a531d232\", \"originalBytes\": 1008, \"editedBytes\": 976, \"sha256\": \"8d22d5be636d9f6fd3b9cc0411eb7dd0996e25edd18ecbd24203a955e5e09a3d\", \"originalSha256\": \"b0b2d6dec233f34e5ae7fe6d6ac0a5256a9b604455d30d7cb2e6111fbb47dc00\", \"start\": 146, \"end\": 162, \"paddedEnd\": 162, \"changes\": [{\"kind\": \"spanLength\", \"site\": 74, \"newSite\": 74, \"before\": 48, \"after\": 16}, {\"kind\": \"absoluteSuffixPointer\", \"site\": 90, \"newSite\": 90, \"before\": 240, \"after\": 208}, {\"kind\": \"absoluteSuffixPointer\", \"site\": 138, \"newSite\": 138, \"before\": 194, \"after\": 162}], \"unchangedEnvelopeVerified\": true}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "export-relocation",
+        "--schema",
+        "/Users/nazeeh/Documents/Codex/2026-11-17/portfolio-design/candidates/repositories/Reclay-design/source/docs/presentation/learned.json",
+        "--out",
+        "/Users/nazeeh/Documents/Codex/2026-11-17/portfolio-design/candidates/repositories/Reclay-design/source/docs/presentation/editor.py"
+      ],
+      "exit": 0,
+      "stdout": "{\"editor\": \"/Users/nazeeh/Documents/Codex/2026-11-17/portfolio-design/candidates/repositories/Reclay-design/source/docs/presentation/editor.py\"}\n",
+      "stderr": ""
+    }
+  ]
+}

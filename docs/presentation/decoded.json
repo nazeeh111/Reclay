@@ -1,0 +1,44 @@
+{
+  "working.tif": {
+    "size": [
+      32,
+      24
+    ],
+    "mode": "L",
+    "pixel_sha256": "b6d384dc05b09586e4aa5308ce4beebb4a7aade32516091908ceab6ab82eecdb",
+    "tags": {
+      "256": "32",
+      "257": "24",
+      "258": "(8,)",
+      "259": "1",
+      "262": "1",
+      "270": "Afterlife fresh file metadata that was withheld",
+      "273": "(240,)",
+      "278": "24",
+      "279": "(768,)",
+      "284": "1",
+      "65000": "Owned opaque metadata must remain byte exact"
+    }
+  },
+  "edited.tif": {
+    "size": [
+      32,
+      24
+    ],
+    "mode": "L",
+    "pixel_sha256": "b6d384dc05b09586e4aa5308ce4beebb4a7aade32516091908ceab6ab82eecdb",
+    "tags": {
+      "256": "32",
+      "257": "24",
+      "258": "(8,)",
+      "259": "1",
+      "262": "1",
+      "270": "Afterlife short",
+      "273": "(208,)",
+      "278": "24",
+      "279": "(768,)",
+      "284": "1",
+      "65000": "Owned opaque metadata must remain byte exact"
+    }
+  }
+}
