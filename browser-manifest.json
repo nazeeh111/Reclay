@@ -30,8 +30,8 @@
     },
     {
       "path": "relocation.js",
-      "bytes": 15670,
-      "sha256": "7c3664bea8ba5f1ce27589655ee8bdbb1cd9231db4d5c49c03edca73b403fe75"
+      "bytes": 15941,
+      "sha256": "2bf0813b15e9bf53a0e1f79954096f8a425d5353467398d6c6fc757cd94d1dfb"
     },
     {
       "path": "browser-transport.js",
