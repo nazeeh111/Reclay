@@ -12,6 +12,10 @@
 }
 body {
   margin: 0;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   background: var(--paper);
   color: var(--ink);
   font:
@@ -27,10 +31,21 @@ main {
   padding: 24px 36px;
 }
 header {
+  width: 100%;
+  margin: 0 auto;
+  flex: 0 0 auto;
   display: flex;
   justify-content: space-between;
   border-bottom: 1px solid var(--line);
   align-items: center;
+}
+main {
+  width: 100%;
+  margin: 0 auto;
+  min-height: 0;
+  flex: 1;
+  overflow: auto;
+  scrollbar-gutter: stable;
 }
 a {
   color: var(--ink);
@@ -345,10 +360,18 @@ pre {
   font-size: 10px;
 }
 #status {
-  margin-top: 20px;
+  flex: 0 0 auto;
+  height: 4rem;
+  min-height: 4rem;
+  max-height: 25dvh;
+  overflow: auto;
+  overflow-wrap: anywhere;
+  margin: 0;
+  border-top: 1px solid var(--line);
   border-left: 3px solid var(--green);
-  padding: 9px 15px;
-  font-size: 13px;
+  padding: 9px max(16px, calc((100vw - 1468px) / 2));
+  background: var(--white);
+  font-size: 14px;
 }
 #status.error {
   border-color: #a4482e;
