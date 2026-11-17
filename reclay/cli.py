@@ -2,7 +2,7 @@
 
 import argparse, json, pathlib, sys
 from . import __version__
-from .engine import infer, parse, rebuild, ReclayError
+from .engine import infer, parse, rebuild, ReclayError, validate_hypotheses, ensemble_sha256
 from .standalone import export_standalone
 from .relocation import (
     infer_relocation,
@@ -48,6 +48,8 @@ def choose(path, model_id=None):
     )
     if not models:
         raise ValueError("Schema contains no inferred models")
+    if not model_id and isinstance(obj, dict) and "validation" in obj:
+        raise ValueError("Select a surviving --model ID explicitly after holdout validation")
     if model_id:
         matches = [m for m in models if m.get("id", m.get("modelId")) == model_id]
         if len(matches) != 1:
@@ -69,6 +71,11 @@ def main(argv=None):
     sp = p.add_subparsers(dest="command", required=True)
     q = sp.add_parser("infer")
     q.add_argument("files", nargs="+")
+    q.add_argument("--out", required=True)
+    q = sp.add_parser("validate-hypotheses", help="Test inferred models on byte-distinct holdouts")
+    q.add_argument("files", nargs="+")
+    q.add_argument("--schema", required=True)
+    q.add_argument("--expect-schema-sha256", required=True)
     q.add_argument("--out", required=True)
     for action in ["inspect", "edit", "export"]:
         q = sp.add_parser(action)
@@ -109,6 +116,18 @@ def main(argv=None):
     q.add_argument("--port", type=int, default=0)
     a = p.parse_args(argv)
     try:
+        if a.command == "validate-hypotheses":
+            if not 1 <= len(a.files) <= 8:
+                raise ValueError("Provide 1 to 8 holdout files")
+            ensemble = json.loads(read(a.schema, 9 * 1_048_576))
+            result = validate_hypotheses(ensemble, [read(f) for f in a.files], expected_sha256=a.expect_schema_sha256)
+            digest = ensemble_sha256(result)
+            encoded = (json.dumps(result, sort_keys=True, separators=(",", ":"), ensure_ascii=True) + "\n").encode()
+            if len(encoded) > 9 * 1_048_576:
+                raise ValueError("Validated ensemble exceeds the schema input limit")
+            save(a.out, encoded)
+            print(json.dumps({"status": result["status"], "models": len(result["models"]), "schema": a.out, "schemaSha256": digest}))
+            return 0 if result["models"] else 2
         if a.command == "infer-relocation":
             observations = json.loads(read(a.observations))
             if not isinstance(observations, list) or not 2 <= len(observations) <= 8:
@@ -143,6 +162,7 @@ def main(argv=None):
                         "status": result["status"],
                         "models": len(result["models"]),
                         "schema": a.out,
+                        "schemaSha256": ensemble_sha256(result),
                     }
                 )
             )

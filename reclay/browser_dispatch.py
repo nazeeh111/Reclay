@@ -9,7 +9,7 @@ import hashlib
 import json
 
 from . import __version__
-from .engine import infer, parse, rebuild
+from .engine import infer, parse, rebuild, validate_hypotheses, ensemble_sha256, open_schema
 from .relocation import (
     infer_relocation,
     inspect_relocation,
@@ -24,6 +24,9 @@ ROUTES = {
     "/api/health": (set(), set()),
     "/health": (set(), set()),
     "/api/infer": ({"samples"}, set()),
+    "/api/validate-hypotheses": ({"ensemble", "expectedSha256", "samples"}, set()),
+    "/api/ensemble-identity": ({"ensemble"}, set()),
+    "/api/open-schema": ({"record"}, set()),
     "/api/parse": ({"data", "model"}, set()),
     "/api/edit": ({"data", "model"}, {"edits"}),
     "/api/export": ({"model"}, set()),
@@ -107,6 +110,20 @@ def dispatch(path, body):
         relocation = path == "/api/relocation/infer"
         data, spans = _observations(body["samples"], relocation)
         result = infer_relocation(data, spans) if relocation else infer(data)
+    elif path == "/api/open-schema":
+        result = open_schema(body["record"])
+    elif path == "/api/ensemble-identity":
+        result = {"sha256": ensemble_sha256(body["ensemble"])}
+    elif path == "/api/validate-hypotheses":
+        items = body["samples"]
+        if type(items) is not list or not 1 <= len(items) <= 8:
+            _fail("input-bound", "Provide 1–8 holdouts")
+        blobs = []
+        for item in items:
+            if type(item) is not dict or set(item) - {"data", "name"} or "data" not in item:
+                _fail("invalid-observation", "Holdout needs binary data")
+            blobs.append(_decode(item["data"]))
+        result = validate_hypotheses(body["ensemble"], blobs, expected_sha256=body["expectedSha256"])
     elif path in ("/api/export", "/api/relocation/export"):
         relocation = path == "/api/relocation/export"
         result = {

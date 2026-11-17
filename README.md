@@ -90,6 +90,38 @@ There is no universal format recovery or automatic repair of arbitrary corruptio
 
 The included files were generated for this project by FFmpeg, using deterministic synthetic signals and images. `reclay/examples/manifest.json` records the producer, commands, hashes and held-out identities. No third-party source is embedded in the runtime. Original product code is MIT licensed.
 
+## Validate hypotheses on holdouts
+
+`infer` prints `schemaSha256`, the SHA-256 of the canonical JSON ensemble (sorted keys, compact separators, ASCII escapes). Use that identity to bind a holdout check to the ensemble you reviewed:
+
+```sh
+reclay validate-hypotheses --schema learned.reclay --expect-schema-sha256 DIGEST \
+  fresh-a.bin fresh-b.bin --out checked.reclay
+reclay inspect --schema checked.reclay --model SURVIVING_MODEL_ID fresh-a.bin
+```
+
+Every candidate is parsed and rebuilt byte-for-byte against every holdout. The result retains all survivors and per-candidate refusal codes; `no-survivors` exits 2 and still writes the result. A survivor is merely consistent with these checks, even when only one remains. The original truncation flag and reasons are preserved. Explicit model selection is required for subsequent inspect, edit or export. To check further samples, use the `schemaSha256` printed by the previous validation. The command refuses reused byte hashes, stale schema identities, and workloads above 256 candidate/sample checks or 64 MiB of candidate-input work. It accepts 1–8 holdouts totaling at most 4 MiB. A resource-limit failure is not evidence that a candidate is wrong. Byte-distinct SHA-256 identities cannot establish independent origin or authenticate the schema, nor prove uniqueness or complete format semantics. Only the latest validation contains per-model refusal details; retain earlier result files for that history.
+
+The same operation is available to Python callers as `reclay.engine.validate_hypotheses`, and as `/api/validate-hypotheses` in the local server and browser dispatcher. In the studio, infer the collection, choose fresh files under **Check independent files**, then select **Validate candidates**. The results show survivors and refusal codes; save the validation record if you need its evidence. File-read, identity, or work-limit failures leave the prior ensemble unchanged. Selecting a model is still explicit after validation.
+
+## Reopen saved work
+
+In the tagged-block studio, use **Open saved schema or record** to load a saved
+selected grammar, inferred ensemble or validation record, including an empty
+survivor record for inspection. Choose a candidate explicitly, then open a working
+binary file. Originals are not embedded in the JSON and must be supplied again.
+Check fresh holdouts to continue validation; recorded byte identities still refuse
+reused evidence. A selected schema does not retain the original search coverage
+or holdout record, so its search is shown as incomplete.
+
+The same bounded Python model validator checks imports in the local server and
+browser worker. JSON/reading/validation/cancellation errors preserve the current
+workspace. Replacing an opened working file asks for confirmation first. A
+successful import replaces the workspace and clears prior drafts and
+previews. Imported histories are recorded claims: opening does not authenticate
+their origin, rerun prior checks or establish completeness or uniqueness. Keep
+the separate validation record when saving the selected schema.
+
 ## Terminal workflow
 
 ```sh
